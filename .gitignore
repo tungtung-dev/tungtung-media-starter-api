@@ -1,0 +1,9 @@
+# dependencies
+node_modules
+.idea
+
+# build
+dist
+
+# user upload
+public/user-upload/*
