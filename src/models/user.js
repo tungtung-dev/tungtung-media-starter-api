@@ -1,9 +1,7 @@
 /**
  * Created by Tien Nguyen on 8/20/16.
  */
-
-
-var mongoose = require('mongoose');
+import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var UserSchema = new Schema({

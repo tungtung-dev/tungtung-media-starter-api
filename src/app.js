@@ -37,6 +37,8 @@ app.use('/media', routes.mediaRoute);
 
 app.use('/auth', routes.authRoute);
 
+app.use('/blogs', routes.blogRoute);
+
 app.listen(config.port, ()=> {
     console.log(`App listening ${config.port}!!`);
 });
