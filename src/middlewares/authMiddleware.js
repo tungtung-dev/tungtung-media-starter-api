@@ -1,34 +1,39 @@
-var fetch = require('node-fetch');
-import config from "../config";
+import jwt from 'jsonwebtoken';
+import config from '../config';
+import User from '../models/user';
 
-var authMiddleware = function (req, res, next) {
-    var token = req.body.token || req.query.token || req.headers['x-access-token'] || req.headers['authorization'];
+function getTokenFromAuthorization(req) {
+    var token = req.headers['authorization'];
+    if(token != null){
+        return token.substr(4, token.length);
+    }
+    return '';
+}
+
+export default (req, res, next) => {
+    var token = req.body.token || req.session.token || req.query.user_token || req.headers['x-access-token'] || getTokenFromAuthorization(req);
     if (token) {
-        fetch(`${config.auth_api}/auth/me`, {
-            headers: {
-                'Authorization': req.headers['authorization']
-            }
-        }).then(function (data) {
-            return data.json();
-        }).then(function (data) {
-            if (data) {
-                req.user = data;
-                next();
+        jwt.verify(token, config.secret, (err, payload) => {
+            if (err) {
+                return res.json({success: false, message: 'Failed to authenticate token'});
             } else {
-                res.json({success: false, message: 'Login error'});
+                User.findById({_id: payload._doc._id}).then(user => {
+                    if (user) {
+                        req.user = user;
+                        req.token = token;
+                        next();
+                    }
+                    else {
+                        return res.json({success: false, message: 'User not found'});
+                    }
+                })
             }
-        }).catch(function (error) {
-            console.log(error);
-
-            res.json({success: false, message: 'Login error'});
-        })
+        });
     }
     else {
         return res.status(403).send({
             success: false,
-            message: 'No token provied'
+            message: 'No token provided'
         })
     }
-};
-
-export default authMiddleware;
+}

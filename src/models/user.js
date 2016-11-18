@@ -11,14 +11,12 @@ var UserSchema = new Schema({
     avatar: String,
     username: String,
     password: String,
-    fullname: String,
+    full_name: String,
     birthday: String,
     gender: String,
     nickname: String,
     biography: String,
     facebook: String,
-    followed_users: [{type: Schema.ObjectId, ref: 'user'}],
-    followed_tags: [{type: Schema.ObjectId, ref: 'tag'}],
     admin: Boolean
 });
 

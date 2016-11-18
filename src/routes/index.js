@@ -1,4 +1,5 @@
 import mediaRoute from './mediaRoute';
+import authRoute from './authRoute';
 
-export {mediaRoute}
-export default {mediaRoute}
+export {mediaRoute, authRoute}
+export default {mediaRoute, authRoute}

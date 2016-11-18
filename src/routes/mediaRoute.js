@@ -1,15 +1,12 @@
-import express from 'express';
-import expressFormData from 'express-form-data';
-import mime from 'mime-types';
-
-import {
-    createDirectory, deleteDirectory,
-} from '../utils/file_system';
-import path from 'path';
-import fs from 'fs';
-import mediaUtils from '../utils/mediaUtils';
-import {folderDao, fileDao} from '../dao/index';
-import authMiddleware from '../middlewares/authMiddleware';
+import express from "express";
+import expressFormData from "express-form-data";
+import mime from "mime-types";
+import {createDirectory, deleteDirectory} from "../utils/fileSystem";
+import path from "path";
+import fs from "fs";
+import mediaUtils from "../utils/mediaUtils";
+import {folderDao, fileDao} from "../dao/index";
+import authMiddleware from "../middlewares/authMiddleware";
 
 var route = express.Router();
 
@@ -99,7 +96,6 @@ route.get('/folders', authMiddleware, (req, res) => {
  * Delete folder
  */
 route.delete('/folders/:folder_id', authMiddleware, (req, res) => {
-    console.log('deltete');
 
     (async() => {
         try {
@@ -122,7 +118,7 @@ route.delete('/folders/:folder_id', authMiddleware, (req, res) => {
 });
 
 /*
- * Update fodler name
+ * Update folder name
  */
 route.put('/folders/:folder_id', authMiddleware, (req, res) => {
     (async() => {
@@ -189,7 +185,7 @@ route.get('/folders/:folder_id', authMiddleware, (req, res) => {
         const photos = await fileDao.getFiles(folder_id, req.user._id, req.user.username);
         res.json(photos);
     })();
-})
+});
 
 /**
  * Delete file
@@ -197,13 +193,15 @@ route.get('/folders/:folder_id', authMiddleware, (req, res) => {
  */
 route.delete('/files/:file_id', authMiddleware, (req, res) => {
     const {file_id} = req.params;
-    (async () => {
+    (async() => {
         var file = await fileDao.getFile(file_id);
         if (file) {
             const filePath = mediaUtils.getFilePathUser(req.user.username, file);
             const fileThumbnailPath = mediaUtils.getFileThumbnailPathUser(req.user.username, file);
-            deleteDirectory(filePath, () => {})
-            deleteDirectory(fileThumbnailPath, () => {})
+            deleteDirectory(filePath, () => {
+            });
+            deleteDirectory(fileThumbnailPath, () => {
+            });
             fileDao.deleteFile(file_id);
             res.json({success: true});
         } else {

@@ -1,8 +1,7 @@
 import fs from "fs";
 import path from "path";
-import config from '../config';
-import rimraf from 'rimraf';
-import mime from 'mime-types';
+import rimraf from "rimraf";
+import mime from "mime-types";
 
 export function getDirectories(path_base) {
     return fs.readdirSync(path_base).filter(function (file) {
@@ -48,7 +47,7 @@ export function getFileInDirectory(path_base, directory) {
                         size: file_info.size,
                         type: mime.lookup(file),
                         created_at: file_info.ctime,
-                        updated_at: file_info.mtime,
+                        updated_at: file_info.mtime
                     }
                 }).sort(function (file1, file2) {
                     return file1.created_at.getTime() - file2.created_at.getTime();
@@ -77,8 +76,8 @@ export function walkSync(path_base, filelist = [], folder_name, level = 1) {
                 folder_name: folder_name,
                 size: file_fs.size,
                 created_at: file_fs.ctime,
-                updated_at: file_fs.mtime,
-            }
+                updated_at: file_fs.mtime
+            };
             filelist.push(file_info);
         }
     });
