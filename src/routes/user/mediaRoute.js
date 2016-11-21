@@ -1,12 +1,12 @@
 import express from "express";
 import expressFormData from "express-form-data";
 import mime from "mime-types";
-import {createDirectory, deleteDirectory} from "../utils/fileSystem";
+import {createDirectory, deleteDirectory} from "../../utils/fileSystem";
 import path from "path";
 import fs from "fs";
-import mediaUtils from "../utils/mediaUtils";
-import {folderDao, fileDao} from "../dao/index";
-import authMiddleware from "../middlewares/authMiddleware";
+import mediaUtils from "../../utils/mediaUtils";
+import {folderDao, fileDao} from "../../dao/index";
+import authMiddleware from "../../middlewares/authMiddleware";
 
 var route = express.Router();
 

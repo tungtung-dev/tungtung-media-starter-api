@@ -2,13 +2,13 @@
  * Created by Tien Nguyen on 11/18/16.
  */
 import express from "express";
-import authMiddleware from "../middlewares/authMiddleware";
-import {getAllBlogsWithPagination} from "../dao/blogDao";
+import authMiddleware from "../../middlewares/authMiddleware";
+import {getAllBlogsWithPagination} from "../../dao/blogDao";
 import url from 'url';
-import {getBlogBySlug} from "../dao/blogDao";
-import {saveBlog} from "../dao/blogDao";
+import {getBlogBySlug} from "../../dao/blogDao";
+import {saveBlog} from "../../dao/blogDao";
 import slug from 'slug';
-import {makeId} from "../utils/helper";
+import {makeId} from "../../utils/helper";
 
 var route = express.Router();
 

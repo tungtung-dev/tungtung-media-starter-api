@@ -4,7 +4,8 @@ import path from 'path';
 import mongoose from 'mongoose';
 import morgan from 'morgan';
 import config from './config';
-import routes from './routes/index';
+import userRoutes from './routes/user/index';
+import adminRoutes from './routes/admin/index';
 import session from 'express-session';
 
 var app = express();
@@ -33,11 +34,16 @@ app.use(function (req, res, next) {
     next();
 });
 
-app.use('/media', routes.mediaRoute);
+app.use('/media', userRoutes.mediaRoute);
 
-app.use('/auth', routes.authRoute);
+app.use('/auth', userRoutes.authRoute);
 
-app.use('/blogs', routes.blogRoute);
+app.use('/blogs', userRoutes.blogRoute);
+
+app.use('/settings', userRoutes.settingRoute);
+
+
+app.use('/admin/settings', adminRoutes.settingAdminRoute);
 
 app.listen(config.port, ()=> {
     console.log(`App listening ${config.port}!!`);
