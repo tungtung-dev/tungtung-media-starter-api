@@ -15,7 +15,8 @@ route.get('/', (req, res) => {
     let url_parts = url.parse(req.url, true);
     let query = url_parts.query;
     let tag_slugs = query.tag_slugs !== undefined ? query.tag_slugs.split(",") : [];
-    getBlogsByTagsWithPagination(tag_slugs, query, (err, data) => {
+    let keyword = query.keyword !== undefined ? query.keyword : "";
+    getBlogsByTagsWithPagination(keyword, tag_slugs, query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
@@ -28,9 +29,10 @@ route.post('/', authMiddleware, (req, res) => {
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
     let slug_title = slug(req.body.title) + "-" + makeId();
+    let search_field = slug(req.body.title);
     let description = req.body.description;
     let content = req.body.content;
-    let data = {title: title, slug: slug_title, description: description, content: content};
+    let data = {title: title, slug: slug_title, description: description, content: content, search_field: search_field};
     saveBlog(req.user._id, data, tags, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
@@ -56,8 +58,9 @@ route.put('/:blog_slug', (req, res) => {
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
     let description = req.body.description;
+    let search_field = slug(req.body.title, " ");
     let content = req.body.content;
-    let data = {title: title, description: description, content: content, updated_at: new Date()};
+    let data = {title: title, description: description, content: content, search_field: search_field, updated_at: new Date()};
     updateBlog(blog_slug, data, tags, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});

@@ -4,6 +4,7 @@ var Schema = mongoose.Schema;
 var blogPostSchema = new mongoose.Schema({
     title: {type: String, required: true},
     slug: {type: String, required: true},
+    search_field: {type: String, required: true},
     description: {type: String},
     content: {type: String},
     tags: [{type: Schema.ObjectId, ref: 'tag'}],
@@ -13,5 +14,6 @@ var blogPostSchema = new mongoose.Schema({
 });
 
 blogPostSchema.set('toJSON', {virtuals: true});
+blogPostSchema.index({search_field: 1}, {unique: false});
 
 export default mongoose.model('blog', blogPostSchema);

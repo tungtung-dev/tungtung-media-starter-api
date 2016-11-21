@@ -41,6 +41,7 @@ function getBlogsWithPagination(query, pagination_info, callback) {
             Blog.find(query)
                 .skip(pagination.min_index)
                 .limit(pagination.item_per_page)
+                .populate({path: "tags"})
                 .exec((err, data) => {
                     callback(err, {data, pagination});
                 });
@@ -61,19 +62,33 @@ function getAllBlogsWithPagination(pagination_info, callback) {
 }
 
 /**
+ *
+ * @param keyword
+ * @param pagination_info
+ * @param callback
+ */
+function searchBlogsByKeyword(keyword, pagination_info, callback) {
+    let query = {$text: {$search: keyword}};
+    getBlogsWithPagination(query, pagination_info, callback);
+}
+/**
  * Query paginated Blogs by array of tag slug
+ * @param keyword search keyword
  * @param tag_slugs array of tag slug
  * @param pagination_info include item_per_page and page information to get pagination data
  * @param callback
  */
-function getBlogsByTagsWithPagination(tag_slugs, pagination_info, callback) {
+function getBlogsByTagsWithPagination(keyword, tag_slugs, pagination_info, callback) {
     (async() => {
         try {
-            if (tag_slugs.length === 0) {
+            if (tag_slugs.length === 0 && keyword === "") {
                 getAllBlogsWithPagination(pagination_info, callback);
+            } else if (tag_slugs.length === 0 && keyword !== "") {
+                searchBlogsByKeyword(keyword, pagination_info, callback);
             } else {
                 let tags = await getTagsByTagSlugs(tag_slugs);
-                let query = {tags: {$in: tags}};
+                let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}]}
+                    : {tags: {$in: tags}};
                 getBlogsWithPagination(query, pagination_info, callback);
             }
         } catch (err) {
