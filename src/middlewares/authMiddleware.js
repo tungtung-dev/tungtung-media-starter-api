@@ -1,22 +1,25 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
 import User from '../models/user';
+import {getTokenFromAuthorization} from "./middlewareUtils";
 
-function getTokenFromAuthorization(req) {
-    var token = req.headers['authorization'];
-    if(token != null){
-        return token.substr(4, token.length);
-    }
-    return '';
-}
-
+/**
+ * Verify user authentication middleware
+ * @param req user request
+ * @param res response
+ * @param next
+ * @returns {*}
+ */
 export default (req, res, next) => {
-    var token = req.body.token || req.session.token || req.query.user_token || req.headers['x-access-token'] || getTokenFromAuthorization(req);
+    var token = req.body.token || req.session.token || req.query.user_token || req.headers['x-access-token']
+        || getTokenFromAuthorization(req);
     if (token) {
+        // Verify given token and get payload data
         jwt.verify(token, config.secret, (err, payload) => {
             if (err) {
                 return res.json({success: false, message: 'Failed to authenticate token'});
             } else {
+                // Query user by payload data
                 User.findById({_id: payload._doc._id}).then(user => {
                     if (user) {
                         req.user = user;
@@ -34,6 +37,6 @@ export default (req, res, next) => {
         return res.status(403).send({
             success: false,
             message: 'No token provided'
-        })
+        });
     }
 }

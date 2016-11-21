@@ -46,6 +46,12 @@ async function saveTags(tags) {
     return tag_ids;
 }
 
+/**
+ * Get tags with pagination by query
+ * @param queryObj query object: ex: {}, {_id: "123"}
+ * @param pagination_info include item_per_page and page information to get pagination data
+ * @param callback
+ */
 function getTagsWithPagination(queryObj, pagination_info, callback) {
     (async() => {
         try {
@@ -62,6 +68,12 @@ function getTagsWithPagination(queryObj, pagination_info, callback) {
         }
     })();
 }
+
+/**
+ * Get all tags with pagination
+ * @param pagination_info include item_per_page and page information to get pagination data
+ * @param callback
+ */
 function getAllTagsWithPagination(pagination_info, callback) {
     let queryObj = {};
     getTagsWithPagination(queryObj, pagination_info, callback);
