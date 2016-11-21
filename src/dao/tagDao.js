@@ -3,6 +3,7 @@
  */
 import {Tag} from '../models/index';
 import slug from 'slug';
+import Pagination from 'pagination-js';
 
 /**
  * Save new tag if it is not exist
@@ -45,5 +46,26 @@ async function saveTags(tags) {
     return tag_ids;
 }
 
-export {saveTagIfNeeded, saveTags}
-export default {saveTagIfNeeded, saveTags}
+function getTagsWithPagination(queryObj, pagination_info, callback) {
+    (async() => {
+        try {
+            let count = await Tag.count(queryObj).exec();
+            let pagination = (new Pagination(pagination_info, count)).getPagination();
+            Tag.find(queryObj)
+                .skip(pagination.min_index)
+                .limit(pagination.item_per_page)
+                .exec((err, data) => {
+                    callback(err, {data, pagination});
+                });
+        } catch (err) {
+            callback(err);
+        }
+    })();
+}
+function getAllTagsWithPagination(pagination_info, callback) {
+    let queryObj = {};
+    getTagsWithPagination(queryObj, pagination_info, callback);
+}
+
+export {saveTagIfNeeded, saveTags, getAllTagsWithPagination}
+export default {saveTagIfNeeded, saveTags, getAllTagsWithPagination}

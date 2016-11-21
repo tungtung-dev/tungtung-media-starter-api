@@ -42,6 +42,8 @@ app.use('/blogs', userRoutes.blogRoute);
 
 app.use('/settings', userRoutes.settingRoute);
 
+app.use('/tags', userRoutes.tagRoute);
+
 
 app.use('/admin/settings', adminRoutes.settingAdminRoute);
 
