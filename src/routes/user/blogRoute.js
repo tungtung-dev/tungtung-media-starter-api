@@ -3,19 +3,18 @@
  */
 import express from "express";
 import authMiddleware from "../../middlewares/authMiddleware";
-import {getAllBlogsWithPagination} from "../../dao/blogDao";
-import url from 'url';
-import {getBlogBySlug} from "../../dao/blogDao";
-import {saveBlog} from "../../dao/blogDao";
-import slug from 'slug';
+import {getBlogBySlug, saveBlog, deleteBlogBySlug, getBlogsByTagsWithPagination} from "../../dao/blogDao";
+import url from "url";
+import slug from "slug";
 import {makeId} from "../../utils/helper";
 
 var route = express.Router();
 
 route.get('/', (req, res) => {
     let url_parts = url.parse(req.url, true);
-    let pagination_info = url_parts.query;
-    getAllBlogsWithPagination(pagination_info, (err, data) => {
+    let query = url_parts.query;
+    let tag_slugs = query.tag_slugs !== undefined ? query.tag_slugs.split(",") : [];
+    getBlogsByTagsWithPagination(tag_slugs, query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
@@ -43,6 +42,17 @@ route.post('/', authMiddleware, (req, res) => {
 route.get('/:blog_slug', (req, res) => {
     var {blog_slug} = req.params;
     getBlogBySlug(blog_slug, (err, data) => {
+        if (err || data === null) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
+});
+
+route.delete('/:blog_slug', (req, res) => {
+    var {blog_slug} = req.params;
+    deleteBlogBySlug(blog_slug, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {

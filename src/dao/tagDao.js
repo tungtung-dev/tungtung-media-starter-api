@@ -79,5 +79,11 @@ function getAllTagsWithPagination(pagination_info, callback) {
     getTagsWithPagination(queryObj, pagination_info, callback);
 }
 
-export {saveTagIfNeeded, saveTags, getAllTagsWithPagination}
-export default {saveTagIfNeeded, saveTags, getAllTagsWithPagination}
+async function getTagsByTagSlugs(tag_slugs) {
+    console.log("tag_slugs: " + tag_slugs.length);
+    return await Tag.find({slug: {$in: tag_slugs}})
+        .exec();
+}
+
+export {saveTagIfNeeded, saveTags, getAllTagsWithPagination, getTagsByTagSlugs}
+export default {saveTagIfNeeded, saveTags, getAllTagsWithPagination, getTagsByTagSlugs}
