@@ -6,7 +6,8 @@ import authMiddleware from "../../middlewares/authMiddleware";
 import {getBlogBySlug, saveBlog, deleteBlogBySlug, getBlogsByTagsWithPagination} from "../../dao/blogDao";
 import url from "url";
 import slug from "slug";
-import {makeId} from "../../utils/helper";
+import {makeId} from "common-helper";
+import {updateBlog} from "../../dao/blogDao";
 
 var route = express.Router();
 
@@ -42,6 +43,22 @@ route.post('/', authMiddleware, (req, res) => {
 route.get('/:blog_slug', (req, res) => {
     var {blog_slug} = req.params;
     getBlogBySlug(blog_slug, (err, data) => {
+        if (err || data === null) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
+});
+
+route.put('/:blog_slug', (req, res) => {
+    var {blog_slug} = req.params;
+    let tags = req.body.tags === undefined ? [] : req.body.tags;
+    let title = req.body.title === undefined ? "untitled" : req.body.title;
+    let description = req.body.description;
+    let content = req.body.content;
+    let data = {title: title, description: description, content: content, updated_at: new Date()};
+    updateBlog(blog_slug, data, tags, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {

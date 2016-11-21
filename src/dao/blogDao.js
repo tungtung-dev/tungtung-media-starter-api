@@ -104,6 +104,26 @@ function saveBlog(user_id, blog_data, tags, callback) {
 }
 
 /**
+ * Update Blog data
+ * @param slug
+ * @param blog_data
+ * @param tags
+ * @param callback
+ */
+function updateBlog(slug, blog_data, tags, callback) {
+    (async() => {
+        try {
+            let tag_ids = await saveTags(tags);
+            Object.assign(blog_data, {tags: tag_ids});
+            Blog.findOneAndUpdate({slug: slug}, {$set: blog_data})
+                .exec(callback);
+        } catch (err) {
+            callback(err);
+        }
+    })();
+}
+
+/**
  * Delete blog by slug
  * @param slug slug from request
  * @param callback
@@ -120,7 +140,8 @@ export {
     getBlogsWithPagination,
     saveBlog,
     deleteBlogBySlug,
-    getBlogsByTagsWithPagination
+    getBlogsByTagsWithPagination,
+    updateBlog
 }
 export default {
     countBlogs,
@@ -129,5 +150,6 @@ export default {
     getBlogsWithPagination,
     saveBlog,
     deleteBlogBySlug,
-    getBlogsByTagsWithPagination
+    getBlogsByTagsWithPagination,
+    updateBlog
 }

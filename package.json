@@ -47,6 +47,7 @@
     "rimraf": "^2.5.4",
     "slug": "^0.9.1",
     "validator": "^6.1.0",
-    "winston": "^2.3.0"
+    "winston": "^2.3.0",
+    "common-helper": "^1.0.0"
   }
 }
