@@ -30,14 +30,14 @@ function getBlogBySlug(slug, callback) {
 /**
  * Query paginated Blogs
  * @param query query Object
- * @param pagination_info include item_per_page and page information to get pagination data
+ * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
  */
-function getBlogsWithPagination(query, pagination_info, callback) {
+function getBlogsWithPagination(query, paginationInfo, callback) {
     (async() => {
         try {
             let count = await Blog.count(query).exec();
-            let pagination = (new Pagination(pagination_info, count)).getPagination();
+            let pagination = (new Pagination(paginationInfo, count)).getPagination();
             Blog.find(query)
                 .skip(pagination.min_index)
                 .limit(pagination.item_per_page)
@@ -53,43 +53,44 @@ function getBlogsWithPagination(query, pagination_info, callback) {
 
 /**
  * Query paginated Blogs
- * @param pagination_info include item_per_page and page information to get pagination data
+ * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
  */
-function getAllBlogsWithPagination(pagination_info, callback) {
+function getAllBlogsWithPagination(paginationInfo, callback) {
     let query = {};
-    getBlogsWithPagination(query, pagination_info, callback);
+    getBlogsWithPagination(query, paginationInfo, callback);
 }
 
 /**
  *
  * @param keyword
- * @param pagination_info
+ * @param paginationInfo
  * @param callback
  */
-function searchBlogsByKeyword(keyword, pagination_info, callback) {
+function searchBlogsByKeyword(keyword, paginationInfo, callback) {
     let query = {$text: {$search: keyword}};
-    getBlogsWithPagination(query, pagination_info, callback);
+    getBlogsWithPagination(query, paginationInfo, callback);
 }
+
 /**
  * Query paginated Blogs by array of tag slug
  * @param keyword search keyword
- * @param tag_slugs array of tag slug
- * @param pagination_info include item_per_page and page information to get pagination data
+ * @param tagSlugs array of tag slug
+ * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
  */
-function getBlogsByTagsWithPagination(keyword, tag_slugs, pagination_info, callback) {
+function getBlogsByTagsWithPagination(keyword, tagSlugs, paginationInfo, callback) {
     (async() => {
         try {
-            if (tag_slugs.length === 0 && keyword === "") {
-                getAllBlogsWithPagination(pagination_info, callback);
-            } else if (tag_slugs.length === 0 && keyword !== "") {
-                searchBlogsByKeyword(keyword, pagination_info, callback);
+            if (tagSlugs.length === 0 && keyword === "") {
+                getAllBlogsWithPagination(paginationInfo, callback);
+            } else if (tagSlugs.length === 0 && keyword !== "") {
+                searchBlogsByKeyword(keyword, paginationInfo, callback);
             } else {
-                let tags = await getTagsByTagSlugs(tag_slugs);
+                let tags = await getTagsByTagSlugs(tagSlugs);
                 let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}]}
                     : {tags: {$in: tags}};
-                getBlogsWithPagination(query, pagination_info, callback);
+                getBlogsWithPagination(query, paginationInfo, callback);
             }
         } catch (err) {
             callback(err);
@@ -99,18 +100,18 @@ function getBlogsByTagsWithPagination(keyword, tag_slugs, pagination_info, callb
 
 /**
  * Save Blog data
- * @param user_id
- * @param blog_data
+ * @param userId
+ * @param blogData
  * @param tags
  * @param callback
  */
-function saveBlog(user_id, blog_data, tags, callback) {
+function saveBlog(userId, blogData, tags, callback) {
     (async() => {
         try {
             let tag_ids = await saveTags(tags);
-            Object.assign(blog_data, {tags: tag_ids});
-            Object.assign(blog_data, {user: user_id});
-            let blog = new Blog(blog_data);
+            Object.assign(blogData, {tags: tag_ids});
+            Object.assign(blogData, {user: userId});
+            let blog = new Blog(blogData);
             blog.save(callback);
         } catch (err) {
             callback(err);
@@ -121,16 +122,16 @@ function saveBlog(user_id, blog_data, tags, callback) {
 /**
  * Update Blog data
  * @param slug
- * @param blog_data
+ * @param blogData
  * @param tags
  * @param callback
  */
-function updateBlog(slug, blog_data, tags, callback) {
+function updateBlog(slug, blogData, tags, callback) {
     (async() => {
         try {
-            let tag_ids = await saveTags(tags);
-            Object.assign(blog_data, {tags: tag_ids});
-            Blog.findOneAndUpdate({slug: slug}, {$set: blog_data})
+            let tagIds = await saveTags(tags);
+            Object.assign(blogData, {tags: tagIds});
+            Blog.findOneAndUpdate({slug: slug}, {$set: blogData})
                 .exec(callback);
         } catch (err) {
             callback(err);

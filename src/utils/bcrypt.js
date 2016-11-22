@@ -1,12 +1,12 @@
 import bcrypt from 'bcrypt';
 
-const saltRounds = 10;
+const SALT_ROUNDS = 10;
 
 export default {
     generate: (text) => {
-        var salt = bcrypt.genSaltSync(saltRounds);
-        var hash = bcrypt.hashSync(text, salt);
-        return hash;
+        var salt = bcrypt.genSaltSync(SALT_ROUNDS);
+        return bcrypt.hashSync(text, salt);
+
     },
     compare: (text, hash) => {
         return bcrypt.compareSync(text, hash);

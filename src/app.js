@@ -12,8 +12,8 @@ var app = express();
 mongoose.connect(config.database);
 
 app.use(session({
-    secret: 'tungtungtung^5',
-    cookie: {maxAge: 900000}
+    secret: config.sessionCookie,
+    cookie: {maxAge: config.cookieMaxAge}
 }));
 
 app.use(bodyParser.json());

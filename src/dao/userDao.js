@@ -16,7 +16,7 @@ function updateBalance(queryObj, value, callback) {
             callback(err);
         } else {
             user.balance += value;
-            user.updated_at = new Date();
+            user.updatedAt = new Date();
         }
     });
 }

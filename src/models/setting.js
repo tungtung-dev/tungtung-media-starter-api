@@ -5,18 +5,18 @@ import mongoose from "mongoose";
 
 var {Schema} = mongoose;
 
-var SettingSchema = new Schema({
+var settingSchema = new Schema({
     key: String,
     value: {},
-    is_private: Boolean,
-    created_at: {type: Date},
-    updated_at: {type: Date}
+    isPrivate: Boolean,
+    createdAt: {type: Date},
+    updatedAt: {type: Date}
 });
 
-SettingSchema.virtual('id').get(function () {
+settingSchema.virtual('id').get(function () {
     return this._id;
 });
 
-SettingSchema.set('toJSON', {virtuals: true});
+settingSchema.set('toJSON', {virtuals: true});
 
-export default mongoose.model('setting', SettingSchema);
+export default mongoose.model('setting', settingSchema);

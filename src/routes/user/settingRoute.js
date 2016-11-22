@@ -8,7 +8,7 @@ import Setting from "../../models/setting";
 var route = express.Router();
 
 route.get('/', function (req, res, next) {
-    Setting.find({is_private: false}).exec((err, settings) => {
+    Setting.find({isPrivate: false}).exec((err, settings) => {
         if (err) {
             res.json({success: false, message: err.message});
         } else {

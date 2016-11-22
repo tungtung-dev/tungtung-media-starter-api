@@ -13,12 +13,12 @@ export default class EmailSender {
     }
 
     async getEmailTemplate(template, data){
-        var email_templates_setting = await settingDao.getKey('email_content');
-        var email_templates = email_templates_setting.value;
-        if(email_templates && email_templates[template]){
-            var email_template = email_templates[template];
-            var subject = ejs.render(email_template.subject, data);
-            var content = marked(ejs.render(email_template.content, data));
+        var emailTemplatesSetting = await settingDao.getKey('email_content');
+        var emailTemplates = emailTemplatesSetting.value;
+        if(emailTemplates && emailTemplates[template]){
+            var emailTemplate = emailTemplates[template];
+            var subject = ejs.render(emailTemplate.subject, data);
+            var content = marked(ejs.render(emailTemplate.content, data));
             this.emailSubject = subject;
             this.content = content;
             return {subject, content}
@@ -27,7 +27,7 @@ export default class EmailSender {
     }
 
     async sendMailForgotPassword(token){
-        const url = `http://${Config.domain_public}/#/auth/new-password?token=${token}`;
+        const url = `http://${Config.domainPublic}/#/auth/new-password?token=${token}`;
         const emailTemplate = await this.getEmailTemplate('forgot_password', {url});
         if(!emailTemplate) return ;
         this.send();
@@ -40,12 +40,12 @@ export default class EmailSender {
         }
     }
 
-    async sendMailContactUs(from_email, name, message) {
-        var emails_admin = await settingDao.getKey('email');
-        var emails = emails_admin.value;
-        this.emailSubject = `Contact us from ${from_email}`;
+    async sendMailContactUs(fromEmail, name, message) {
+        var emailsAdmin = await settingDao.getKey('email');
+        var emails = emailsAdmin.value;
+        this.emailSubject = `Contact us from ${fromEmail}`;
         this.content = `
-            <p>From email: ${from_email}</p>
+            <p>From email: ${fromEmail}</p>
             <p>Name: ${name}</p>
             <p>Message: ${message}</p>
         `;

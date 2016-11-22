@@ -43,15 +43,15 @@ route.post('/login', (req, res) => {
                 res.json({success: false, errors});
             }
             else {
-                var {token, user} = createTokenAndGetUser(user);
-                user = _.extend(user, {
-                    is_remember: true
+                var {token, userFromToken} = createTokenAndGetUser(userFromToken);
+                userFromToken = _.extend(userFromToken, {
+                    isRemember: true
                 });
                 res.json({
                     success: true,
                     message: 'Enjoy your token',
                     token: token,
-                    user
+                    user: userFromToken
                 })
             }
         }
@@ -60,8 +60,8 @@ route.post('/login', (req, res) => {
 
 route.post('/register', (req, res) => {
     var {email, username, password} = req.body;
-    var url_parts = url.parse(req.url, true);
-    var query = url_parts.query;
+    var urlParts = url.parse(req.url, true);
+    var query = urlParts.query;
 
     var errors = {};
     if (!email || !username || !password) {
@@ -83,15 +83,15 @@ route.post('/register', (req, res) => {
                         email,
                         username,
                         password: bscrypt.generate(password),
-                        created_at: new Date()
+                        createdAt: new Date()
                     });
                     user.save().then((user)=> {
-                        var {token, user} = createTokenAndGetUser(user);
+                        var {token, userFromToken} = createTokenAndGetUser(userFromToken);
                         // Send Email simple email
-                        new EmailSender(user.email, function (action) {
+                        new EmailSender(userFromToken.email, function (action) {
                             action.sendMailWelcome(username, password);
                         });
-                        return res.json({user, success: true, token});
+                        return res.json({user: userFromToken, success: true, token});
                     });
                 }
                 else {
@@ -119,13 +119,6 @@ route.get('/me', authMiddleware, (req, res)=> {
 
 });
 
-route.put('/tags-follow', authMiddleware, (req, res) => {
-    var {tags_follow} = req.body;
-    if (!tags_follow) return res.json({success: false, message: 'tag follow required'});
-    User.findOneAndUpdate({_id: req.user._id}, {followed_tags: tags_follow}, {new: true}).select({password: 0}).then(user => {
-        return res.json(user);
-    });
-});
 
 route.get('/profile', authMiddleware, (req, res) => {
     User.findOne({_id: req.user._id}, {password: 0}).then(user => {
@@ -134,19 +127,17 @@ route.get('/profile', authMiddleware, (req, res) => {
 });
 
 route.put('/profile', authMiddleware, (req, res) => {
-    const {fullname, birthday, gender, nickname, biography, facebook, currency_accounts} = req.body;
+    const {fullName, birthday, gender, nickname, biography, facebook} = req.body;
     console.log("User: " + req.user._id);
     User.findOneAndUpdate({_id: req.user._id},
         {
             $set: {
-                fullname,
+                fullName,
                 gender,
                 birthday,
                 nickname,
                 biography,
-                facebook,
-                currency_accounts,
-                admin: true
+                facebook
             }
         }, {new: true})
         .select({password: 0})
@@ -161,11 +152,11 @@ route.put('/profile', authMiddleware, (req, res) => {
 });
 
 route.put('/password', authMiddleware, (req, res) => {
-    const {password, new_password} = req.body;
-    if (new_password.length < 6) {
+    const {password, newPassword} = req.body;
+    if (newPassword.length < 6) {
         res.json({
             success: false, errors: {
-                new_password: 'Password require min length 5'
+                newPassword: 'Password require min length 5'
             }
         });
     }
@@ -173,7 +164,7 @@ route.put('/password', authMiddleware, (req, res) => {
         if (bscrypt.compare(password, user.password)) {
             User.findOneAndUpdate({_id: req.user.id}, {
                 $set: {
-                    password: bscrypt.generate(new_password)
+                    password: bscrypt.generate(newPassword)
                 }
             }).then(user => {
                 res.json({success: true});
@@ -189,13 +180,13 @@ route.put('/password', authMiddleware, (req, res) => {
 });
 
 route.put('/avatar', authMiddleware, (req, res) => {
-    const {image_base64} = req.body;
+    const {imageBase64} = req.body;
     const {user} = req;
     var cleanAvatar = (filepath) => {
-        var fpath = filepath.split('/');
-        return fpath[fpath.length - 1];
+        var fPath = filepath.split('/');
+        return fPath[fPath.length - 1];
     };
-    base64Img.img(image_base64, 'public/uploads/avatars', user.id + new Date(), function (err, filepath) {
+    base64Img.img(imageBase64, 'public/uploads/avatars', user.id + new Date(), function (err, filepath) {
         if (err) {
             return res.json({success: false});
         }
@@ -205,8 +196,8 @@ route.put('/avatar', authMiddleware, (req, res) => {
             if (err) {
                 return res.json({success: false});
             }
-            const {avatar, avatar_url} = user;
-            return res.json({success: true, avatar, avatar_url});
+            const {avatar, avatarUrl} = user;
+            return res.json({success: true, avatar, avatarUrl});
         })
     });
 });

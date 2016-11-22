@@ -10,18 +10,18 @@ export function cleanUser(user) {
     });
 }
 
-export function getQueryUserId(user_id, other_object) {
-    user_id = user_id.toString();
+export function getQueryUserId(userId, otherObject) {
+    userId = userId.toString();
     var query = {};
-    if (!other_object) other_object = {};
-    if (user_id.match(/^[0-9a-fA-F]{24}$/)) {
-        query = {user_id: user_id}
+    if (!otherObject) otherObject = {};
+    if (userId.match(/^[0-9a-fA-F]{24}$/)) {
+        query = {user_id: userId}
     }
     else {
 
-        query = {username: user_id}
+        query = {username: userId}
     }
-    return Object.assign(query, other_object);
+    return Object.assign(query, otherObject);
 }
 
 

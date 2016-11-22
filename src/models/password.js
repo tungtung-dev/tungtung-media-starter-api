@@ -6,17 +6,17 @@ import mongoose from "mongoose";
 
 var {Schema} = mongoose;
 
-var PasswordSchema = new Schema({
+var passwordSchema = new Schema({
     email: String,
     token: String,
-    created_at: {type: Date, default: Date.now},
-    updated_at: {type: Date, default: Date.now}
+    createdAt: {type: Date, default: Date.now},
+    updatedAt: {type: Date, default: Date.now}
 });
 
-PasswordSchema.virtual('id').get(function () {
+passwordSchema.virtual('id').get(function () {
     return this._id;
 });
 
-PasswordSchema.set('toJSON', {virtuals: true});
+passwordSchema.set('toJSON', {virtuals: true});
 
-export default mongoose.model('password', PasswordSchema);
+export default mongoose.model('password', passwordSchema);

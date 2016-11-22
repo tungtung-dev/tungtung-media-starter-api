@@ -22,51 +22,51 @@ route.post('/upload', authMiddleware, expressFormData.parse(), (req, res) => {
 
     (async() => {
         try {
-            const {folder_id} = req.body;
+            const {folderId} = req.body;
             var folder = {};
-            if (folder_id !== 'all') {
-                folder = await folderDao.getFolder(folder_id);
-                if (!folder && folder_id !== 'all') {
+            if (folderId !== 'all') {
+                folder = await folderDao.getFolder(folderId);
+                if (!folder && folderId !== 'all') {
                     res.json({success: false});
                     return;
                 }
             }
 
-            const folder_slug = folder_id === 'all' ? 'all' : folder.slug;
-            const folder_path = mediaUtils.getFolderPathUser(req.user.username, folder_slug);
-            const folder_thumbnail_path = mediaUtils.getFolderThumbnailPathUser(req.user.username, folder_slug);
+            const folderSlug = folderId === 'all' ? 'all' : folder.slug;
+            const folderPath = mediaUtils.getFolderPathUser(req.user.username, folderSlug);
+            const folderThumbnailPath = mediaUtils.getFolderThumbnailPathUser(req.user.username, folderSlug);
 
-            var file_upload;
-            if (req.files.uploads.length > 0) file_upload = req.files.uploads[0];
-            if (!file_upload) {
+            var fileUpload;
+            if (req.files.uploads.length > 0) fileUpload = req.files.uploads[0];
+            if (!fileUpload) {
                 res.json({success: false, message: `File's empty`});
                 return;
             }
 
-            let file_upload_path = path.join(folder_path, file_upload.name);
-            let file_thumbnail_upload_path = path.join(folder_thumbnail_path, file_upload.name);
+            let fileUploadPath = path.join(folderPath, fileUpload.name);
+            let fileThumbnailUploadPath = path.join(folderThumbnailPath, fileUpload.name);
 
-            const file_detail = await fileDao.saveFile({
-                name: file_upload.name,
-                type: mime.lookup(file_upload.name),
-                folder_slug,
-                folder_id: folder ? folder.id : '',
-                user_id: req.user.id
+            const fileDetail = await fileDao.saveFile({
+                name: fileUpload.name,
+                type: mime.lookup(fileUpload.name),
+                folderSlug: folderSlug,
+                folderId: folder ? folder.id : '',
+                userId: req.user.id
             });
 
-            fs.rename(file_upload.path, file_upload_path, () => {
-                if (file_detail.type.match('image/*')) {
+            fs.rename(fileUpload.path, fileUploadPath, () => {
+                if (fileDetail.type.match('image/*')) {
                     mediaUtils.resizeImageSquare(
-                        file_upload_path,
-                        file_thumbnail_upload_path,
+                        fileUploadPath,
+                        fileThumbnailUploadPath,
                     ).then(() => {
-                        res.json(mediaUtils.getFileDetail(file_detail, req.user.username));
+                        res.json(mediaUtils.getFileDetail(fileDetail, req.user.username));
                     }).catch(e => {
-                        res.json({success: false});
+                        res.json({success: false, message: e.message});
                     })
                 }
                 else {
-                    res.json(mediaUtils.getFileDetail(file_detail, req.user.username));
+                    res.json(mediaUtils.getFileDetail(fileDetail, req.user.username));
                 }
             });
         }
@@ -95,18 +95,18 @@ route.get('/folders', authMiddleware, (req, res) => {
 /**
  * Delete folder
  */
-route.delete('/folders/:folder_id', authMiddleware, (req, res) => {
+route.delete('/folders/:folderId', authMiddleware, (req, res) => {
 
     (async() => {
         try {
-            const {folder_id} = req.params;
-            const folder = await folderDao.getFolder(folder_id);
+            const {folderId} = req.params;
+            const folder = await folderDao.getFolder(folderId);
             if (folder) {
-                const folder_path = mediaUtils.getFolderPathUser(req.user.username, folder.slug);
-                console.log(folder_path);
-                deleteDirectory(folder_path, () => {
+                const folderPath = mediaUtils.getFolderPathUser(req.user.username, folder.slug);
+                console.log(folderPath);
+                deleteDirectory(folderPath, () => {
                 });
-                folderDao.deleteFolder(folder_id);
+                folderDao.deleteFolder(folderId);
             }
             res.json({success: true})
         }
@@ -120,12 +120,12 @@ route.delete('/folders/:folder_id', authMiddleware, (req, res) => {
 /*
  * Update folder name
  */
-route.put('/folders/:folder_id', authMiddleware, (req, res) => {
+route.put('/folders/:folderId', authMiddleware, (req, res) => {
     (async() => {
         try {
-            const {folder_id} = req.params;
+            const {folderId} = req.params;
             const {name} = req.body;
-            const folder = await folderDao.updateFolder(folder_id, name, req.user.id);
+            const folder = await folderDao.updateFolder(folderId, name, req.user.id);
             if (folder) {
                 res.json({success: true});
             }
@@ -179,10 +179,10 @@ route.get('/folders/all', authMiddleware, (req, res) => {
 /*
  * Get files in folder
  */
-route.get('/folders/:folder_id', authMiddleware, (req, res) => {
-    const {folder_id} = req.params;
+route.get('/folders/:folderId', authMiddleware, (req, res) => {
+    const {folderId} = req.params;
     (async() => {
-        const photos = await fileDao.getFiles(folder_id, req.user._id, req.user.username);
+        const photos = await fileDao.getFiles(folderId, req.user._id, req.user.username);
         res.json(photos);
     })();
 });
@@ -192,9 +192,9 @@ route.get('/folders/:folder_id', authMiddleware, (req, res) => {
  * @param file_id:ObjectID
  */
 route.delete('/files/:file_id', authMiddleware, (req, res) => {
-    const {file_id} = req.params;
+    const {fileId} = req.params;
     (async() => {
-        var file = await fileDao.getFile(file_id);
+        var file = await fileDao.getFile(fileId);
         if (file) {
             const filePath = mediaUtils.getFilePathUser(req.user.username, file);
             const fileThumbnailPath = mediaUtils.getFileThumbnailPathUser(req.user.username, file);
@@ -202,7 +202,7 @@ route.delete('/files/:file_id', authMiddleware, (req, res) => {
             });
             deleteDirectory(fileThumbnailPath, () => {
             });
-            fileDao.deleteFile(file_id);
+            fileDao.deleteFile(fileId);
             res.json({success: true});
         } else {
             res.json({success: false});

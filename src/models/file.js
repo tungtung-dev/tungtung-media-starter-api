@@ -1,20 +1,20 @@
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
-var FileSchema = new Schema({
+var fileSchema = new Schema({
     name: String,
     type: String,
-    folder_id: String,
-    folder_slug: String,
-    user_id: String,
-    created_at: {type: Date, default: Date.now},
-    updated_at: {type: Date, default: Date.now}
+    folderId: String,
+    folderSlug: String,
+    userId: String,
+    createdAt: {type: Date, default: Date.now},
+    updatedAt: {type: Date, default: Date.now}
 });
 
-FileSchema.virtual('id').get(function () {
+fileSchema.virtual('id').get(function () {
     return this._id;
 });
 
-FileSchema.set('toJSON', { virtuals: true });
+fileSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('file', FileSchema);
+module.exports = mongoose.model('file', fileSchema);

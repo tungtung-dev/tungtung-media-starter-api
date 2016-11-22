@@ -57,15 +57,15 @@ export default class AuthSocial {
             else {
                 const names = userGoogle.names[0];
                 const gender = userGoogle.genders[0].value;
-                const avatar_url = userGoogle.photos[0].url;
+                const avatarUrl = userGoogle.photos[0].url;
                 const email = userGoogle.emailAddresses[0].value;
                 this.userSocial = {
                     id: names.metadata.source.id,
                     name: names.displayName,
                     email,
                     gender,
-                    avatar_url
-                }
+                    avatarUrl
+                };
                 callback();
             }
         })
@@ -77,7 +77,7 @@ export default class AuthSocial {
                 return 'facebookID';
                 break;
             case 'google':
-                return 'gooleID';
+                return 'googleID';
             default:
                 return this.res.json({success: false, message: 'Không tìm thấy mạng xã hội'});
         }
@@ -86,11 +86,11 @@ export default class AuthSocial {
     checkLoginUser() {
         var keySocialID = this.getKeySocialID();
         var createToken = (user) => {
-            var {token, user} = createTokenAndGetUser(user);
-            return this.res.json({user, success: true, token});
-        }
-        (async () => {
-            var user = await User.findOne({$or: [{[keySocialID]: this.userSocial.id}, {email: this.userSocial.email}]})
+            var {token, userFromToken} = createTokenAndGetUser(user);
+            return this.res.json({user: userFromToken, success: true, token});
+        };
+        (async() => {
+            var user = await User.findOne({$or: [{[keySocialID]: this.userSocial.id}, {email: this.userSocial.email}]});
             if (!user) {
                 return this.res.json({success: false, message: "Tài khoản mạng xã hội không tồn tại"});
             }
@@ -99,7 +99,7 @@ export default class AuthSocial {
                     return createToken(user);
                 }
                 else {
-                    // Intergate user social ID, if email social = local user email
+                    // Integrate user social ID, if email social = local user email
                     var userUpdate = await User.findOneAndUpdate({email: this.userSocial.email}, {
                         $set: {
                             [keySocialID]: this.userSocial.id
@@ -119,7 +119,7 @@ export default class AuthSocial {
     createUser() {
         var {username, password} = this.req.body;
         var keySocialID = this.getKeySocialID();
-        (async () => {
+        (async() => {
             var user = await User.findOne({[keySocialID]: this.userSocial.id});
             if (user) {
                 return this.res.json({success: false, message: 'Tài khoản đã tồn tại'});
@@ -136,36 +136,36 @@ export default class AuthSocial {
                     user = new User({
                         email: this.userSocial.email,
                         birthday: this.userSocial.birthday,
-                        fullname: this.userSocial.name,
+                        fullName: this.userSocial.name,
                         gender: this.userSocial.gender,
                         [keySocialID]: this.userSocial.id,
                         username,
-                        password: bcrypt.generate(password),
+                        password: bcrypt.generate(password)
                     });
                     user = await user.save();
                     var filename = `${user._id}.jpg`;
 
                     new EmailSender(user.email, function (action) {
-                        action.sendMailWelcome(user.fullname);
+                        action.sendMailWelcome(user.fullName);
                     });
 
-                    if (this.userSocial.avatar_url) {
-                        downloadImage(this.userSocial.avatar_url, `public/uploads/avatars/${filename}`, ()=> {
+                    if (this.userSocial.avatarUrl) {
+                        downloadImage(this.userSocial.avatarUrl, `public/uploads/avatars/${filename}`, ()=> {
                             User.findOneAndUpdate({_id: user._id}, {
                                 $set: {
                                     avatar: filename
                                 }
                             }, {new: true}, (err, user) => {
                                 if (user) {
-                                    var {token, user} = createTokenAndGetUser(user);
-                                    return this.res.json({user, success: true, token});
+                                    let {token, userFromToken} = createTokenAndGetUser(user);
+                                    return this.res.json({user: userFromToken, success: true, token});
                                 }
                             })
                         })
                     }
                     else {
-                        var {token, user} = createTokenAndGetUser(user);
-                        return this.res.json({user, success: true, token});
+                        let {token, userFromToken} = createTokenAndGetUser(user);
+                        return this.res.json({user: userFromToken, success: true, token});
                     }
                 }
             }

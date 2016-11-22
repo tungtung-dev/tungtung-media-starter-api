@@ -4,12 +4,12 @@
 import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
-var UserSchema = new Schema({
+var userSchema = new Schema({
     email: String,
     avatar: String,
     username: String,
     password: String,
-    full_name: String,
+    fullName: String,
     birthday: String,
     gender: String,
     nickname: String,
@@ -18,10 +18,10 @@ var UserSchema = new Schema({
     admin: Boolean
 });
 
-UserSchema.virtual('id').get(function () {
+userSchema.virtual('id').get(function () {
     return this._id;
 });
 
-UserSchema.set('toJSON', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
-module.exports = mongoose.model('user', UserSchema);
+module.exports = mongoose.model('user', userSchema);

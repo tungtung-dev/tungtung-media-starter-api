@@ -11,9 +11,9 @@ var router = express.Router();
 // Support api: /tags to get all tag with pagination info
 // Support select tags by tag name, example /tags?tag_name=vật
 router.get('/', function (req, res, next) {
-    let url_parts = url.parse(req.url, true);
-    let pagination_info = url_parts.query;
-    getAllTagsWithPagination(pagination_info, (err, data) => {
+    let urlParts = url.parse(req.url, true);
+    let paginationInfo = urlParts.query;
+    getAllTagsWithPagination(paginationInfo, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {

@@ -5,17 +5,17 @@
 import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
-var TagSchema = new Schema({
-    tag_name: String,
+var tagSchema = new Schema({
+    tagName: String,
     slug: String,
-    created_at: {type: Date, default: Date.now},
-    updated_at: {type: Date, default: Date.now}
+    createdAt: {type: Date, default: Date.now},
+    updatedAt: {type: Date, default: Date.now}
 });
 
-TagSchema.virtual('id').get(function () {
+tagSchema.virtual('id').get(function () {
     return this._id;
 });
 
-TagSchema.set('toJSON', {virtuals: true});
+tagSchema.set('toJSON', {virtuals: true});
 
-module.exports = mongoose.model('tag', TagSchema);
+module.exports = mongoose.model('tag', tagSchema);

@@ -24,17 +24,17 @@ route.post('/', authAdminMiddleware, function (req, res, next) {
             for (let i = 0; i < keys.length; i++) {
                 let key = keys[i];
                 let value = req.body[key];
-                let is_private = req.body[key].is_private;
-                console.log("key = " + key + " value = " + value + " is_private = " + is_private);
+                let isPrivate = req.body[key].isPrivate;
+                console.log("key = " + key + " value = " + value + " isPrivate = " + isPrivate);
                 await Setting.update({key: key}, {
                     $setOnInsert: {
                         key: key,
-                        created_at: new Date()
+                        createdAt: new Date()
                     },
                     $set: {
                         value: value,
-                        is_private: is_private,
-                        updated_at: new Date()
+                        isPrivate: isPrivate,
+                        updatedAt: new Date()
                     }
                 }, {upsert: true}).exec();
             }
