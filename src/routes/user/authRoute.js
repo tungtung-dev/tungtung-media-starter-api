@@ -13,7 +13,6 @@ import url from "url";
 import logger from "../../utils/logger";
 
 var route = express.Router();
-const TAG = "AuthRoute";
 
 route.get('/check-exists', (req, res) => {
     var {field, value} = req.query;
@@ -31,27 +30,27 @@ route.get('/check-exists', (req, res) => {
 route.post('/login', (req, res) => {
     var errors = {};
     (async() => {
-        var user = await User.findOne({
+        var userRes = await User.findOne({
             email: req.body.email
         });
-        if (!user) {
+        if (!userRes) {
             errors.email = 'Account not found';
             res.json({success: false, errors});
         } else {
-            if (!bscrypt.compare(req.body.password, user.password)) {
+            if (!bscrypt.compare(req.body.password, userRes.password)) {
                 errors.password = 'Password incorrect';
                 res.json({success: false, errors});
             }
             else {
-                var {token, userFromToken} = createTokenAndGetUser(userFromToken);
-                userFromToken = _.extend(userFromToken, {
+                var {token, user} = createTokenAndGetUser(userRes);
+                user = _.extend(user, {
                     isRemember: true
                 });
                 res.json({
                     success: true,
                     message: 'Enjoy your token',
                     token: token,
-                    user: userFromToken
+                    user: user
                 })
             }
         }
@@ -59,13 +58,11 @@ route.post('/login', (req, res) => {
 });
 
 route.post('/register', (req, res) => {
-    var {email, username, password} = req.body;
-    var urlParts = url.parse(req.url, true);
-    var query = urlParts.query;
+    var {email, username, fullName, password} = req.body;
 
     var errors = {};
-    if (!email || !username || !password) {
-        errors._error = 'Username, email, password shouldn\'t empty';
+    if (!email || !username || !password || !fullName) {
+        errors.error = 'Username, email, password shouldn\'t empty';
     }
     if (email && !validator.isEmail(email)) {
         errors.email = 'Email invalid';
@@ -82,16 +79,14 @@ route.post('/register', (req, res) => {
                     user = new User({
                         email,
                         username,
+                        fullName,
+                        admin: true,
                         password: bscrypt.generate(password),
                         createdAt: new Date()
                     });
-                    user.save().then((user)=> {
-                        var {token, userFromToken} = createTokenAndGetUser(userFromToken);
-                        // Send Email simple email
-                        new EmailSender(userFromToken.email, function (action) {
-                            action.sendMailWelcome(username, password);
-                        });
-                        return res.json({user: userFromToken, success: true, token});
+                    user.save().then((userRes)=> {
+                        var {token, user} = createTokenAndGetUser(userRes);
+                        return res.json({user: user, success: true, token});
                     });
                 }
                 else {
