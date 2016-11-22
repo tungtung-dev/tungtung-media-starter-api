@@ -1,8 +1,8 @@
 import mediaRoute from './mediaRoute';
 import authRoute from './authRoute';
-import blogRoute from './blogRoute';
+import postRoute from './postRoute';
 import settingRoute from './settingRoute';
 import tagRoute from './tagRoute';
 
-export {mediaRoute, authRoute, blogRoute, settingRoute, tagRoute}
-export default {mediaRoute, authRoute, blogRoute, settingRoute, tagRoute}
+export {mediaRoute, authRoute, postRoute, settingRoute, tagRoute}
+export default {mediaRoute, authRoute, postRoute, settingRoute, tagRoute}

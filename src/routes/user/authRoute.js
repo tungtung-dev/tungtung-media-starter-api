@@ -43,7 +43,7 @@ route.post('/login', (req, res) => {
                 res.json({success: false, errors});
             }
             else {
-                var {token, userFromToken} = createTokenAndGetUser(userFromToken);
+                var {token, userFromToken} = createTokenAndGetUser(user);
                 userFromToken = _.extend(userFromToken, {
                     isRemember: true
                 });
@@ -86,7 +86,7 @@ route.post('/register', (req, res) => {
                         createdAt: new Date()
                     });
                     user.save().then((user)=> {
-                        var {token, userFromToken} = createTokenAndGetUser(userFromToken);
+                        var {token, userFromToken} = createTokenAndGetUser(user);
                         // Send Email simple email
                         new EmailSender(userFromToken.email, function (action) {
                             action.sendMailWelcome(username, password);

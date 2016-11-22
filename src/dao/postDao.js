@@ -1,44 +1,44 @@
 /**
  * Created by Tien Nguyen on 11/18/16.
  */
-import {Blog} from '../models/index';
+import {Post} from '../models/index';
 import Pagination from 'pagination-js';
 import {saveTags} from "./tagDao";
 import {getTagsByTagSlugs} from "./tagDao";
 
 
 /**
- * Count blog by query
+ * Count Post by query
  * @param query
  * @param callback
  */
-function countBlogs(query, callback) {
-    Blog.count(query).exec(callback);
+function countPosts(query, callback) {
+    Post.count(query).exec(callback);
 }
 
 /**
- * Get blog with correct slug title
+ * Get Post with correct slug title
  * @param slug
  * @param callback
  */
-function getBlogBySlug(slug, callback) {
-    Blog.findOne({slug: slug})
+function getPostBySlug(slug, callback) {
+    Post.findOne({slug: slug})
         .populate({path: "tags"})
         .exec(callback);
 }
 
 /**
- * Query paginated Blogs
+ * Query paginated Posts
  * @param query query Object
  * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
  */
-function getBlogsWithPagination(query, paginationInfo, callback) {
+function getPostsWithPagination(query, paginationInfo, callback) {
     (async() => {
         try {
-            let count = await Blog.count(query).exec();
+            let count = await Post.count(query).exec();
             let pagination = (new Pagination(paginationInfo, count)).getPagination();
-            Blog.find(query)
+            Post.find(query)
                 .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
                 .populate({path: "tags"})
@@ -52,13 +52,13 @@ function getBlogsWithPagination(query, paginationInfo, callback) {
 }
 
 /**
- * Query paginated Blogs
+ * Query paginated Posts
  * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
-function getAllBlogsWithPagination(paginationInfo, callback) {
+function getAllPostsWithPagination(paginationInfo, callback) {
     let query = {};
-    getBlogsWithPagination(query, paginationInfo, callback);
+    getPostsWithPagination(query, paginationInfo, callback);
 }
 
 /**
@@ -67,30 +67,30 @@ function getAllBlogsWithPagination(paginationInfo, callback) {
  * @param paginationInfo
  * @param callback
  */
-function searchBlogsByKeyword(keyword, paginationInfo, callback) {
+function searchPostsByKeyword(keyword, paginationInfo, callback) {
     let query = {$text: {$search: keyword}};
-    getBlogsWithPagination(query, paginationInfo, callback);
+    getPostsWithPagination(query, paginationInfo, callback);
 }
 
 /**
- * Query paginated Blogs by array of tag slug
+ * Query paginated Posts by array of tag slug
  * @param keyword search keyword
  * @param tagSlugs array of tag slug
  * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
  */
-function getBlogsByTagsWithPagination(keyword, tagSlugs, paginationInfo, callback) {
+function getPostsByTagsWithPagination(keyword, tagSlugs, paginationInfo, callback) {
     (async() => {
         try {
             if (tagSlugs.length === 0 && keyword === "") {
-                getAllBlogsWithPagination(paginationInfo, callback);
+                getAllPostsWithPagination(paginationInfo, callback);
             } else if (tagSlugs.length === 0 && keyword !== "") {
-                searchBlogsByKeyword(keyword, paginationInfo, callback);
+                searchPostsByKeyword(keyword, paginationInfo, callback);
             } else {
                 let tags = await getTagsByTagSlugs(tagSlugs);
                 let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}]}
                     : {tags: {$in: tags}};
-                getBlogsWithPagination(query, paginationInfo, callback);
+                getPostsWithPagination(query, paginationInfo, callback);
             }
         } catch (err) {
             callback(err);
@@ -99,20 +99,20 @@ function getBlogsByTagsWithPagination(keyword, tagSlugs, paginationInfo, callbac
 }
 
 /**
- * Save Blog data
+ * Save Post data
  * @param userId
- * @param blogData
+ * @param postData
  * @param tags
  * @param callback
  */
-function saveBlog(userId, blogData, tags, callback) {
+function savePost(userId, postData, tags, callback) {
     (async() => {
         try {
             let tagIds = await saveTags(tags);
-            Object.assign(blogData, {tags: tagIds});
-            Object.assign(blogData, {user: userId});
-            let blog = new Blog(blogData);
-            blog.save(callback);
+            Object.assign(postData, {tags: tagIds});
+            Object.assign(postData, {user: userId});
+            let post = new Post(postData);
+            post.save(callback);
         } catch (err) {
             callback(err);
         }
@@ -120,18 +120,18 @@ function saveBlog(userId, blogData, tags, callback) {
 }
 
 /**
- * Update Blog data
+ * Update Post data
  * @param slug
- * @param blogData
+ * @param postData
  * @param tags
  * @param callback
  */
-function updateBlog(slug, blogData, tags, callback) {
+function updatePost(slug, postData, tags, callback) {
     (async() => {
         try {
             let tagIds = await saveTags(tags);
-            Object.assign(blogData, {tags: tagIds});
-            Blog.findOneAndUpdate({slug: slug}, {$set: blogData})
+            Object.assign(postData, {tags: tagIds});
+            Post.findOneAndUpdate({slug: slug}, {$set: postData})
                 .exec(callback);
         } catch (err) {
             callback(err);
@@ -140,32 +140,32 @@ function updateBlog(slug, blogData, tags, callback) {
 }
 
 /**
- * Delete blog by slug
+ * Delete Post by slug
  * @param slug slug from request
  * @param callback
  */
-function deleteBlogBySlug(slug, callback) {
-    Blog.findOneAndRemove({slug: slug})
+function deletePostBySlug(slug, callback) {
+    Post.findOneAndRemove({slug: slug})
         .exec(callback);
 }
 
 export {
-    countBlogs,
-    getBlogBySlug,
-    getAllBlogsWithPagination,
-    getBlogsWithPagination,
-    saveBlog,
-    deleteBlogBySlug,
-    getBlogsByTagsWithPagination,
-    updateBlog
+    countPosts,
+    getPostBySlug,
+    getAllPostsWithPagination,
+    getPostsWithPagination,
+    savePost,
+    deletePostBySlug,
+    getPostsByTagsWithPagination,
+    updatePost
 }
 export default {
-    countBlogs,
-    getBlogBySlug,
-    getAllBlogsWithPagination,
-    getBlogsWithPagination,
-    saveBlog,
-    deleteBlogBySlug,
-    getBlogsByTagsWithPagination,
-    updateBlog
+    countPosts,
+    getPostBySlug,
+    getAllPostsWithPagination,
+    getPostsWithPagination,
+    savePost,
+    deletePostBySlug,
+    getPostsByTagsWithPagination,
+    updatePost
 }

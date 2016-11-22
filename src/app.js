@@ -38,7 +38,7 @@ app.use('/media', userRoutes.mediaRoute);
 
 app.use('/auth', userRoutes.authRoute);
 
-app.use('/blogs', userRoutes.blogRoute);
+app.use('/posts', userRoutes.postRoute);
 
 app.use('/settings', userRoutes.settingRoute);
 

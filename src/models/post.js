@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
-var blogPostSchema = new mongoose.Schema({
+var postSchema = new mongoose.Schema({
     title: {type: String, required: true},
     slug: {type: String, required: true},
     searchField: {type: String, required: true},
@@ -13,7 +13,7 @@ var blogPostSchema = new mongoose.Schema({
     updatedAt: {type: Date, default: Date.now}
 });
 
-blogPostSchema.set('toJSON', {virtuals: true});
-blogPostSchema.index({searchField: 1}, {unique: false});
+postSchema.set('toJSON', {virtuals: true});
+postSchema.index({searchField: 1}, {unique: false});
 
-export default mongoose.model('blog', blogPostSchema);
+export default mongoose.model('post', postSchema);
