@@ -92,8 +92,8 @@ function getPostsByTagsWithPagination(keyword = "", tagSlugs = [], state = [post
                 searchPostsByKeyword(state, keyword, paginationInfo, callback);
             } else {
                 let tags = await getTagsByTagSlugs(tagSlugs);
-                let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}]}
-                    : {tags: {$in: tags}};
+                let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}, {state: {$in: state}}]}
+                    : {tags: {$in: tags}, state: {$in: state}};
                 getPostsWithPagination(query, paginationInfo, callback);
             }
         } catch (err) {
