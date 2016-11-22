@@ -3,7 +3,7 @@
  */
 
 import express from "express";
-import Setting from "../../models/setting";
+import {Setting} from "../../models/index";
 
 var route = express.Router();
 
