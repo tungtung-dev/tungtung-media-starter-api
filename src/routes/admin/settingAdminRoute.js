@@ -2,7 +2,7 @@
  * Created by Tien Nguyen on 11/11/16.
  */
 import express from "express";
-import Setting from "../../models/Setting";
+import Setting from "../../models/setting";
 import authAdminMiddleware from "../../middlewares/authAdminMiddleware";
 
 var route = express.Router();
