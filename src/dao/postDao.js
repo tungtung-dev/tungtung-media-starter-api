@@ -5,6 +5,7 @@ import {Post} from '../models/index';
 import Pagination from 'pagination-js';
 import {saveTags} from "./tagDao";
 import {getTagsByTagSlugs} from "./tagDao";
+import {postState} from "../utils/constants";
 
 
 /**
@@ -53,22 +54,24 @@ function getPostsWithPagination(query, paginationInfo, callback) {
 
 /**
  * Query paginated Posts
+ * @param state
  * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
-function getAllPostsWithPagination(paginationInfo, callback) {
-    let query = {};
+function getAllPostsWithPagination(state = [postState.PUBLIC], paginationInfo, callback) {
+    let query = {state: {$in: state}};
     getPostsWithPagination(query, paginationInfo, callback);
 }
 
 /**
  *
+ * @param state
  * @param keyword
  * @param paginationInfo
  * @param callback
  */
-function searchPostsByKeyword(keyword, paginationInfo, callback) {
-    let query = {$text: {$search: keyword}};
+function searchPostsByKeyword(state = [postState.PUBLIC], keyword = "", paginationInfo, callback) {
+    let query = {$text: {$search: keyword}, state: {$in: state}};
     getPostsWithPagination(query, paginationInfo, callback);
 }
 
@@ -76,16 +79,17 @@ function searchPostsByKeyword(keyword, paginationInfo, callback) {
  * Query paginated Posts by array of tag slug
  * @param keyword search keyword
  * @param tagSlugs array of tag slug
+ * @param state
  * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
-function getPostsByTagsWithPagination(keyword, tagSlugs, paginationInfo, callback) {
+function getPostsByTagsWithPagination(keyword = "", tagSlugs = [], state = [postState.PUBLIC], paginationInfo, callback) {
     (async() => {
         try {
             if (tagSlugs.length === 0 && keyword === "") {
-                getAllPostsWithPagination(paginationInfo, callback);
+                getAllPostsWithPagination(state, paginationInfo, callback);
             } else if (tagSlugs.length === 0 && keyword !== "") {
-                searchPostsByKeyword(keyword, paginationInfo, callback);
+                searchPostsByKeyword(state, keyword, paginationInfo, callback);
             } else {
                 let tags = await getTagsByTagSlugs(tagSlugs);
                 let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}]}

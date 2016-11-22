@@ -1,7 +1,7 @@
 /**
- * Created by Cash on 7/16/16.
+ * Created by Tien Nguyen on 7/16/16.
  */
-var winston = require('winston');
+import winston from 'winston';
 winston.emitErrs = true;
 
 var logger = new winston.Logger({
@@ -11,8 +11,8 @@ var logger = new winston.Logger({
             filename: './logs/all-logs.log',
             handleExceptions: true,
             json: true,
-            maxsize: 5242880, //5MB
-            maxFiles: 5,
+            maxsize: 10240000, //10MB
+            maxFiles: 10,
             colorize: false
         }),
         new winston.transports.Console({

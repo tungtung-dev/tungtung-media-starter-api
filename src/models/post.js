@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import {postState} from "../utils/constants";
 var Schema = mongoose.Schema;
 
 var postSchema = new mongoose.Schema({
@@ -7,6 +8,7 @@ var postSchema = new mongoose.Schema({
     searchField: {type: String, required: true},
     description: {type: String},
     content: {type: String},
+    state: {type: String, default: postState.DRAFT},
     tags: [{type: Schema.ObjectId, ref: 'tag'}],
     user: {type: Schema.ObjectId, ref: 'user'},
     createdAt: {type: Date, default: Date.now},
@@ -16,4 +18,4 @@ var postSchema = new mongoose.Schema({
 postSchema.set('toJSON', {virtuals: true});
 postSchema.index({searchField: 1}, {unique: false});
 
-export default mongoose.model('post', postSchema);
+module.exports = mongoose.model('post', postSchema);

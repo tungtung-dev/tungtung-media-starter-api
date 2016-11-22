@@ -7,6 +7,8 @@ import {getPostBySlug, savePost, deletePostBySlug, getPostsByTagsWithPagination,
 import url from "url";
 import slug from "slug";
 import {makeId} from "common-helper";
+import {getCorrectState} from "../../utils/state/index";
+import {postState} from "../../utils/constants";
 
 var route = express.Router();
 
@@ -14,8 +16,7 @@ route.get('/', (req, res) => {
     let urlParts = url.parse(req.url, true);
     let query = urlParts.query;
     let tagSlugs = query.tagSlugs !== undefined ? query.tagSlugs.split(",") : [];
-    let keyword = query.keyword !== undefined ? query.keyword : "";
-    getPostsByTagsWithPagination(keyword, tagSlugs, query, (err, data) => {
+    getPostsByTagsWithPagination(query.keyword, tagSlugs, [postState.PUBLIC], query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
@@ -31,7 +32,11 @@ route.post('/', authMiddleware, (req, res) => {
     let searchField = slug(req.body.title);
     let description = req.body.description;
     let content = req.body.content;
-    let data = {title: title, slug: slugTitle, description: description, content: content, searchField: searchField};
+    let state = getCorrectState(req.body.state);
+    let data = {
+        title: title, slug: slugTitle, description: description, content: content, searchField: searchField,
+        state: state
+    };
     savePost(req.user._id, data, tags, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
@@ -59,11 +64,13 @@ route.put('/:postSlug', (req, res) => {
     let description = req.body.description;
     let searchField = slug(req.body.title, " ");
     let content = req.body.content;
+    let state = getCorrectState(req.body.state);
     let data = {
         title: title,
         description: description,
         content: content,
         searchField: searchField,
+        state: state,
         updatedAt: new Date()
     };
     updatePost(postSlug, data, tags, (err, data) => {
