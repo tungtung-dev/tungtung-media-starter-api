@@ -30,7 +30,7 @@ function getPostBySlug(slug, callback) {
 /**
  * Query paginated Posts
  * @param query query Object
- * @param paginationInfo include item_per_page and page information to get pagination data
+ * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
 function getPostsWithPagination(query, paginationInfo, callback) {
@@ -76,7 +76,7 @@ function searchPostsByKeyword(keyword, paginationInfo, callback) {
  * Query paginated Posts by array of tag slug
  * @param keyword search keyword
  * @param tagSlugs array of tag slug
- * @param paginationInfo include item_per_page and page information to get pagination data
+ * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
 function getPostsByTagsWithPagination(keyword, tagSlugs, paginationInfo, callback) {

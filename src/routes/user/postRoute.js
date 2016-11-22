@@ -3,11 +3,10 @@
  */
 import express from "express";
 import authMiddleware from "../../middlewares/authMiddleware";
-import {getPostBySlug, savePost, deletePostBySlug, getPostsByTagsWithPagination} from "../../dao/PostDao";
+import {getPostBySlug, savePost, deletePostBySlug, getPostsByTagsWithPagination, updatePost} from "../../dao/postDao";
 import url from "url";
 import slug from "slug";
 import {makeId} from "common-helper";
-import {updatePost} from "../../dao/postDao";
 
 var route = express.Router();
 
@@ -42,9 +41,9 @@ route.post('/', authMiddleware, (req, res) => {
     })
 });
 
-route.get('/:PostSlug', (req, res) => {
-    var {PostSlug} = req.params;
-    getPostBySlug(PostSlug, (err, data) => {
+route.get('/:postSlug', (req, res) => {
+    var {postSlug} = req.params;
+    getPostBySlug(postSlug, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
@@ -54,14 +53,20 @@ route.get('/:PostSlug', (req, res) => {
 });
 
 route.put('/:PostSlug', (req, res) => {
-    var {PostSlug} = req.params;
+    var {postSlug} = req.params;
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
     let description = req.body.description;
     let searchField = slug(req.body.title, " ");
     let content = req.body.content;
-    let data = {title: title, description: description, content: content, searchField: searchField, updatedAt: new Date()};
-    updatePost(PostSlug, data, tags, (err, data) => {
+    let data = {
+        title: title,
+        description: description,
+        content: content,
+        searchField: searchField,
+        updatedAt: new Date()
+    };
+    updatePost(postSlug, data, tags, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
@@ -70,9 +75,9 @@ route.put('/:PostSlug', (req, res) => {
     });
 });
 
-route.delete('/:PostSlug', (req, res) => {
-    var {PostSlug} = req.params;
-    deletePostBySlug(PostSlug, (err, data) => {
+route.delete('/:postSlug', (req, res) => {
+    var {postSlug} = req.params;
+    deletePostBySlug(postSlug, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
