@@ -39,8 +39,8 @@ function getBlogsWithPagination(query, paginationInfo, callback) {
             let count = await Blog.count(query).exec();
             let pagination = (new Pagination(paginationInfo, count)).getPagination();
             Blog.find(query)
-                .skip(pagination.min_index)
-                .limit(pagination.item_per_page)
+                .skip(pagination.minIndex)
+                .limit(pagination.itemPerPage)
                 .populate({path: "tags"})
                 .exec((err, data) => {
                     callback(err, {data, pagination});
@@ -53,7 +53,7 @@ function getBlogsWithPagination(query, paginationInfo, callback) {
 
 /**
  * Query paginated Blogs
- * @param paginationInfo include item_per_page and page information to get pagination data
+ * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
 function getAllBlogsWithPagination(paginationInfo, callback) {
@@ -108,8 +108,8 @@ function getBlogsByTagsWithPagination(keyword, tagSlugs, paginationInfo, callbac
 function saveBlog(userId, blogData, tags, callback) {
     (async() => {
         try {
-            let tag_ids = await saveTags(tags);
-            Object.assign(blogData, {tags: tag_ids});
+            let tagIds = await saveTags(tags);
+            Object.assign(blogData, {tags: tagIds});
             Object.assign(blogData, {user: userId});
             let blog = new Blog(blogData);
             blog.save(callback);

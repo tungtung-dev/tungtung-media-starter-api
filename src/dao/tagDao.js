@@ -11,19 +11,19 @@ import Pagination from 'pagination-js';
  * @returns {*}
  */
 async function saveTagIfNeeded(tag) {
-    let slugged_tag = slug(tag);
+    let sluggedTag = slug(tag);
     try {
-        await Tag.update({slug: slugged_tag}, {
+        await Tag.update({slug: sluggedTag}, {
             $set: {
-                updated_at: new Date()
+                updatedAt: new Date()
             },
             $setOnInsert: {
-                tag_name: tag,
-                slug: slugged_tag,
-                created_at: new Date()
+                tagName: tag,
+                slug: sluggedTag,
+                createdAt: new Date()
             }
         }, {upsert: true}).exec();
-        let result = await Tag.findOne({slug: slugged_tag}).exec();
+        let result = await Tag.findOne({slug: sluggedTag}).exec();
         return result._id;
     } catch (err) {
         return null;
@@ -36,30 +36,30 @@ async function saveTagIfNeeded(tag) {
  * @returns {Array}
  */
 async function saveTags(tags) {
-    let tag_ids = [];
+    let tagIds = [];
     for (let i = 0; i < tags.length; i++) {
-        let tag_id = await saveTagIfNeeded(tags[i]);
-        if (tag_id !== null) {
-            tag_ids.push(tag_id);
+        let tagId = await saveTagIfNeeded(tags[i]);
+        if (tagId !== null) {
+            tagIds.push(tagId);
         }
     }
-    return tag_ids;
+    return tagIds;
 }
 
 /**
  * Get tags with pagination by query
  * @param queryObj query object: ex: {}, {_id: "123"}
- * @param pagination_info include item_per_page and page information to get pagination data
+ * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
  */
-function getTagsWithPagination(queryObj, pagination_info, callback) {
+function getTagsWithPagination(queryObj, paginationInfo, callback) {
     (async() => {
         try {
             let count = await Tag.count(queryObj).exec();
-            let pagination = (new Pagination(pagination_info, count)).getPagination();
+            let pagination = (new Pagination(paginationInfo, count)).getPagination();
             Tag.find(queryObj)
-                .skip(pagination.min_index)
-                .limit(pagination.item_per_page)
+                .skip(pagination.minIndex)
+                .limit(pagination.itemPerPage)
                 .exec((err, data) => {
                     callback(err, {data, pagination});
                 });
@@ -71,17 +71,22 @@ function getTagsWithPagination(queryObj, pagination_info, callback) {
 
 /**
  * Get all tags with pagination
- * @param pagination_info include item_per_page and page information to get pagination data
+ * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
  */
-function getAllTagsWithPagination(pagination_info, callback) {
+function getAllTagsWithPagination(paginationInfo, callback) {
     let queryObj = {};
-    getTagsWithPagination(queryObj, pagination_info, callback);
+    getTagsWithPagination(queryObj, paginationInfo, callback);
 }
 
-async function getTagsByTagSlugs(tag_slugs) {
-    console.log("tag_slugs: " + tag_slugs.length);
-    return await Tag.find({slug: {$in: tag_slugs}})
+/**
+ * getTagsByTagSlugs
+ * @param tagSlugs
+ * @returns {Promise}
+ */
+async function getTagsByTagSlugs(tagSlugs) {
+    console.log("tagSlugs: " + tagSlugs.length);
+    return await Tag.find({slug: {$in: tagSlugs}})
         .exec();
 }
 

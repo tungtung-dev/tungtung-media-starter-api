@@ -41,7 +41,7 @@
     "mongoose": "^4.6.5",
     "morgan": "^1.7.0",
     "node-fetch": "^1.6.3",
-    "pagination-js": "^1.0.7",
+    "pagination-js": "^2.0.0",
     "path": "^0.12.7",
     "request": "^2.78.0",
     "rimraf": "^2.5.4",
