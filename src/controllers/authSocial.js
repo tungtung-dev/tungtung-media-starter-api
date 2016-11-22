@@ -1,7 +1,7 @@
 import User from '../models/user';
 import fetch from 'node-fetch';
 import bcrypt from '../utils/bcrypt';
-import EmailSender from '../controllers/EmailSender';
+import EmailSender from './emailSender';
 import {createTokenAndGetUser, downloadImage} from '../utils/index';
 
 export default class AuthSocial {
