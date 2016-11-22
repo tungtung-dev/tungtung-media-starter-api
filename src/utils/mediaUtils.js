@@ -35,8 +35,8 @@ export function getFileThumbnailUrl(username, folderName = '', fileName = ''){
 
 export function getFileInfo(username, folderName = '', fileName = ''){
     return {
-        thumbnail_url: getFileThumbnailUrl(folderName, fileName, username),
-        original_url: getFileOriginalUrl(folderName, fileName, username)
+        thumbnailUrl: getFileThumbnailUrl(folderName, fileName, username),
+        originalUrl: getFileOriginalUrl(folderName, fileName, username)
     }
 }
 
@@ -49,8 +49,8 @@ export function getFileDetail(file, username){
         createdAt,
         updatedAt,
         type,
-        thumbnail_url: getFileThumbnailUrl(username, folderSlug, name, ),
-        original_url: getFileOriginalUrl(username, folderSlug, name)
+        thumbnailUrl: getFileThumbnailUrl(username, folderSlug, name, ),
+        originalUrl: getFileOriginalUrl(username, folderSlug, name)
     }
 }
 

@@ -14,8 +14,6 @@ var route = express.Router();
  *
  */
 route.post('/upload', authMiddleware, expressFormData.parse(), (req, res) => {
-    fileDao.reset();
-
     createDirectory(mediaUtils.getFolderPathUser(req.user.username));
     createDirectory(mediaUtils.getFolderPathUser(req.user.username, 'all'));
     createDirectory(mediaUtils.getFolderThumbnailPathUser(req.user.username, 'all'));
@@ -54,6 +52,8 @@ route.post('/upload', authMiddleware, expressFormData.parse(), (req, res) => {
                 userId: req.user.id
             });
 
+            console.log(fileDetail);
+
             fs.rename(fileUpload.path, fileUploadPath, () => {
                 if (fileDetail.type.match('image/*')) {
                     mediaUtils.resizeImageSquare(
@@ -62,6 +62,7 @@ route.post('/upload', authMiddleware, expressFormData.parse(), (req, res) => {
                     ).then(() => {
                         res.json(mediaUtils.getFileDetail(fileDetail, req.user.username));
                     }).catch(e => {
+                        console.log(e);
                         res.json({success: false, message: e.message});
                     })
                 }
@@ -71,6 +72,7 @@ route.post('/upload', authMiddleware, expressFormData.parse(), (req, res) => {
             });
         }
         catch (e) {
+            console.log(e);
             res.json({success: false});
         }
     })()
@@ -191,7 +193,7 @@ route.get('/folders/:folderId', authMiddleware, (req, res) => {
  * Delete file
  * @param file_id:ObjectID
  */
-route.delete('/files/:file_id', authMiddleware, (req, res) => {
+route.delete('/files/:fileId', authMiddleware, (req, res) => {
     const {fileId} = req.params;
     (async() => {
         var file = await fileDao.getFile(fileId);
