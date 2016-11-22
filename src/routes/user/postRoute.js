@@ -52,7 +52,7 @@ route.get('/:postSlug', (req, res) => {
     });
 });
 
-route.put('/:PostSlug', (req, res) => {
+route.put('/:postSlug', (req, res) => {
     var {postSlug} = req.params;
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
