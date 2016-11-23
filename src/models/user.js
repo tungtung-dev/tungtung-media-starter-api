@@ -5,17 +5,17 @@ import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
-    email: String,
-    avatar: String,
-    username: String,
-    password: String,
-    fullName: String,
-    birthday: String,
-    gender: String,
-    nickname: String,
-    biography: String,
-    facebook: String,
-    admin: Boolean
+    email: {type: String},
+    avatar: {type: String},
+    username: {type: String},
+    password: {type: String},
+    fullName: {type: String},
+    birthday: {type: String},
+    gender: {type: String},
+    nickname: {type: String},
+    biography: {type: String},
+    facebook: {type: String},
+    roles: {type: [String]}
 });
 
 userSchema.virtual('id').get(function () {

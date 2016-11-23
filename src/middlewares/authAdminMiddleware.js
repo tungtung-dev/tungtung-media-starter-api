@@ -20,16 +20,20 @@ export default (req, res, next) => {
                 return res.json({success: false, message: 'Failed to authenticate token'});
             } else {
                 // Query admin user by payload data
-                User.findById({_id: payload._doc._id, admin: true}).then(user => {
-                    if (user) {
-                        req.user = user;
-                        req.token = token;
-                        next();
-                    }
-                    else {
-                        return res.json({success: false, message: 'Admin user not found'});
-                    }
+                User.findById({
+                    _id: payload._doc._id, $or: [{'roles.admin': true}, {'roles.supperAdmin': true}]
                 })
+                    .select({password: 0})
+                    .then(user => {
+                        if (user) {
+                            req.user = user;
+                            req.token = token;
+                            next();
+                        }
+                        else {
+                            return res.json({success: false, message: 'Admin user not found'});
+                        }
+                    });
             }
         });
     }

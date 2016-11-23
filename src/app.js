@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import config from './config';
 import userRoutes from './routes/user/index';
 import adminRoutes from './routes/admin/index';
+import devRoutes from './routes/dev/index';
 import session from 'express-session';
 
 var app = express();
@@ -46,6 +47,8 @@ app.use('/tags', userRoutes.tagRoute);
 
 
 app.use('/admin/settings', adminRoutes.settingAdminRoute);
+
+app.use('/dev/', devRoutes.setupRoute);
 
 app.listen(config.port, ()=> {
     console.log(`App listening ${config.port}!!`);
