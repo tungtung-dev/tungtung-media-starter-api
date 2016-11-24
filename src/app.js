@@ -46,7 +46,9 @@ app.use('/settings', userRoutes.settingRoute);
 app.use('/tags', userRoutes.tagRoute);
 
 
-app.use('/admin/settings', adminRoutes.settingAdminRoute);
+app.use('/admin/settings', adminRoutes.settingRoute);
+app.use('/admin/permissions', adminRoutes.permissionRoute);
+app.use('/admin/content-types', adminRoutes.contentTypeRoute);
 
 app.use('/dev/', devRoutes.setupRoute);
 

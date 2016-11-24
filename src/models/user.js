@@ -15,7 +15,8 @@ var userSchema = new Schema({
     nickname: {type: String},
     biography: {type: String},
     facebook: {type: String},
-    roles: {type: [String]}
+    superAdmin: {type: Boolean, default: false},
+    permissions: {type: [Schema.ObjectId], ref: 'permission'}
 });
 
 userSchema.virtual('id').get(function () {

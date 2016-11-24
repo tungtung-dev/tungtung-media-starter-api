@@ -6,10 +6,23 @@ import bscrypt from "../utils/bcrypt";
 
 const TAG = "UserDAO";
 
+/**
+ *
+ * @param query
+ * @param callback
+ */
 function selectUser(query, callback) {
-    User.findOne(query).exec(callback);
+    User.findOne(query)
+        .select({password: 0})
+        .exec(callback);
 }
 
+/**
+ *
+ * @param queryObj
+ * @param value
+ * @param callback
+ */
 function updateBalance(queryObj, value, callback) {
     User.findOne(queryObj).exec((err, user) => {
         if (err) {
@@ -21,6 +34,12 @@ function updateBalance(queryObj, value, callback) {
     });
 }
 
+/**
+ *
+ * @param email
+ * @param password
+ * @returns {Promise}
+ */
 function updatePassword(email, password) {
     return new Promise((resolve, reject) => {
         User.findOneAndUpdate({email}, {password: bscrypt.generate(password)}, {new: true}).select({password: 0}).then(user => {
@@ -36,6 +55,11 @@ function updatePassword(email, password) {
     })
 }
 
+/**
+ *
+ * @param email
+ * @returns {Promise}
+ */
 function checkEmail(email) {
     return new Promise((resolve, reject) => {
         User.findOne({email}).then(user => {
@@ -47,6 +71,10 @@ function checkEmail(email) {
     })
 }
 
+/**
+ *
+ * @param callback
+ */
 function newestMember(callback) {
     User.findOne({})
         .select({password: 0})
@@ -56,6 +84,10 @@ function newestMember(callback) {
         });
 }
 
+/**
+ *
+ * @param callback
+ */
 function totalAccount(callback) {
     User.count({}).exec(callback);
 }

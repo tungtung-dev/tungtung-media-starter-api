@@ -7,7 +7,8 @@ var Schema = mongoose.Schema;
 var permissionSchema = new Schema({
     name: {type: String},
     codeName: {type: String},
-    contentType: {type: Schema.ObjectId, ref: 'content_type'},
+    // Temporary remove content type
+    // contentType: {type: Schema.ObjectId, ref: 'content_type'},
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now}
 });

@@ -3,11 +3,11 @@
  */
 import express from "express";
 import {Setting} from "../../models/index";
-import authAdminMiddleware from "../../middlewares/authAdminMiddleware";
+import {supperAdminMiddleware} from "../../middlewares/authAdminMiddleware";
 
 var route = express.Router();
 
-route.get('/', authAdminMiddleware, function (req, res, next) {
+route.get('/', supperAdminMiddleware, function (req, res, next) {
     Setting.find().exec((err, settings) => {
         if (err) {
             res.json({success: false, message: err.message});
@@ -17,7 +17,7 @@ route.get('/', authAdminMiddleware, function (req, res, next) {
     });
 });
 
-route.post('/', authAdminMiddleware, function (req, res, next) {
+route.post('/', supperAdminMiddleware, function (req, res, next) {
     let keys = Object.keys(req.body);
     (async() => {
         try {

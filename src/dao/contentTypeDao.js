@@ -4,6 +4,7 @@
 import {ContentType} from '../models/index';
 import contentTypeDefault from './default-data/contentTypes';
 import asyncLib from 'async';
+import Pagination from 'pagination-js';
 
 /**
  * Add default content type into database if it's not exist
@@ -27,4 +28,24 @@ function setupDefaultContentType(callback) {
     })();
 }
 
-export {setupDefaultContentType}
+/**
+ * Get all content types with pagination
+ * @param paginationInfo include itemPerPage and page index information
+ * @param callback
+ */
+function getAllContentTypeWithPagination(paginationInfo, callback) {
+    (async()=> {
+        let queryObj = {};
+        let count = await ContentType.count(queryObj).exec();
+        let pagination = (new Pagination(paginationInfo, count)).getPagination();
+        ContentType.find(queryObj)
+            .skip(pagination.minIndex)
+            .limit(pagination.itemPerPage)
+            .exec((err, contentTypes) => {
+                callback(err, {data: contentTypes, pagination});
+            });
+    })();
+}
+
+
+export {setupDefaultContentType, getAllContentTypeWithPagination}

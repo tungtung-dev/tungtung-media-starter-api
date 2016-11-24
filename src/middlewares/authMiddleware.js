@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
 import config from '../config';
 import User from '../models/user';
-import {getTokenFromAuthorization} from "./middlewareUtils";
+import {getToken} from "./middlewareUtils";
+import {getPermissionByActAndContentType} from "../dao/permissionDao";
 
 /**
  * Verify user authentication middleware
@@ -11,8 +12,7 @@ import {getTokenFromAuthorization} from "./middlewareUtils";
  * @returns {*}
  */
 export default (req, res, next) => {
-    var token = req.body.token || req.session.token || req.query.user_token || req.headers['x-access-token']
-        || getTokenFromAuthorization(req);
+    var token = getToken(req);
     if (token) {
         // Verify given token and get payload data
         jwt.verify(token, config.secret, (err, payload) => {
@@ -20,7 +20,8 @@ export default (req, res, next) => {
                 return res.json({success: false, message: 'Failed to authenticate token'});
             } else {
                 // Query user by payload data
-                User.findById({_id: payload._doc._id}).then(user => {
+                User.findById({_id: payload._doc._id})
+                    .select({password: 0}).then(user => {
                     if (user) {
                         req.user = user;
                         req.token = token;

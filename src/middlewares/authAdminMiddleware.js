@@ -1,7 +1,7 @@
-import jwt from 'jsonwebtoken';
-import config from '../config';
-import User from '../models/user';
-import {getTokenFromAuthorization} from "./middlewareUtils";
+import jwt from "jsonwebtoken";
+import config from "../config";
+import User from "../models/user";
+import {getToken, checkPermission} from "./middlewareUtils";
 
 /**
  * Verify admin user authentication middleware
@@ -10,9 +10,8 @@ import {getTokenFromAuthorization} from "./middlewareUtils";
  * @param next
  * @returns {*}
  */
-export default (req, res, next) => {
-    var token = req.body.token || req.session.token || req.query.user_token || req.headers['x-access-token']
-        || getTokenFromAuthorization(req);
+function supperAdminMiddleware(req, res, next) {
+    var token = getToken(req);
     if (token) {
         // Verify given token and get payload data
         jwt.verify(token, config.secret, (err, payload) => {
@@ -20,17 +19,14 @@ export default (req, res, next) => {
                 return res.json({success: false, message: 'Failed to authenticate token'});
             } else {
                 // Query admin user by payload data
-                User.findById({
-                    _id: payload._doc._id, $or: [{'roles.admin': true}, {'roles.supperAdmin': true}]
-                })
+                User.findOne({_id: payload._doc._id, superAdmin: true})
                     .select({password: 0})
                     .then(user => {
                         if (user) {
                             req.user = user;
                             req.token = token;
                             next();
-                        }
-                        else {
+                        } else {
                             return res.json({success: false, message: 'Admin user not found'});
                         }
                     });
@@ -41,3 +37,194 @@ export default (req, res, next) => {
         return res.status(403).send({success: false, message: 'No token provided'});
     }
 }
+
+
+/**
+ * Check create post permission middleware
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function viewPermissionMiddleware(req, res, next) {
+    let action = 'view';
+    let contentType = 'permission';
+    var token = getToken(req);
+    if (token) {
+        checkPermission(token, action, contentType, (err, user) => {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            } else {
+                req.user = user;
+                req.token = token;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({success: false, message: 'No token provided'});
+    }
+}
+
+/**
+ * Check create post permission middleware
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function addPermissionMiddleware(req, res, next) {
+    let action = 'add';
+    let contentType = 'permission';
+    var token = getToken(req);
+    if (token) {
+        checkPermission(token, action, contentType, (err, user) => {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            } else {
+                req.user = user;
+                req.token = token;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({success: false, message: 'No token provided'});
+    }
+}
+
+/**
+ * Check create post permission middleware
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function changePermissionMiddleware(req, res, next) {
+    let action = 'change';
+    let contentType = 'permission';
+    var token = getToken(req);
+    if (token) {
+        checkPermission(token, action, contentType, (err, user) => {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            } else {
+                req.user = user;
+                req.token = token;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({success: false, message: 'No token provided'});
+    }
+}
+
+/**
+ * Check create post permission middleware
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function deletePermissionMiddleware(req, res, next) {
+    let action = 'delete';
+    let contentType = 'permission';
+    var token = getToken(req);
+    if (token) {
+        checkPermission(token, action, contentType, (err, user) => {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            } else {
+                req.user = user;
+                req.token = token;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({success: false, message: 'No token provided'});
+    }
+}
+
+/**
+ * Check create post permission middleware
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function createPostMiddleware(req, res, next) {
+    let action = 'add';
+    let contentType = 'post';
+    var token = getToken(req);
+    if (token) {
+        checkPermission(token, action, contentType, (err, user) => {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            } else {
+                req.user = user;
+                req.token = token;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({success: false, message: 'No token provided'});
+    }
+}
+
+/**
+ * Check edit post permission middleware
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function editPostMiddleware(req, res, next) {
+    let action = 'change';
+    let contentType = 'post';
+    var token = getToken(req);
+    if (token) {
+        checkPermission(token, action, contentType, (err, user) => {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            } else {
+                req.user = user;
+                req.token = token;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({success: false, message: 'No token provided'});
+    }
+}
+
+/**
+ * Check edit post permission middleware
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+function deletePostMiddleware(req, res, next) {
+    let action = 'delete';
+    let contentType = 'post';
+    var token = getToken(req);
+    if (token) {
+        checkPermission(token, action, contentType, (err, user) => {
+            if (err) {
+                return res.json({success: false, message: err.message});
+            } else {
+                req.user = user;
+                req.token = token;
+                next();
+            }
+        });
+    } else {
+        return res.status(403).send({success: false, message: 'No token provided'});
+    }
+}
+
+export {
+    supperAdminMiddleware,
+    viewPermissionMiddleware, addPermissionMiddleware, changePermissionMiddleware, deletePermissionMiddleware,
+    createPostMiddleware, deletePostMiddleware, editPostMiddleware
+}
+
+export default {supperAdminMiddleware}

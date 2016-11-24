@@ -4,6 +4,7 @@
 import {Permission, ContentType} from '../models/index';
 import permissionsDefault from './default-data/permissions';
 import asyncLib from 'async';
+import Pagination from 'pagination-js';
 
 /**
  * Insert default permission into database if it's not exist
@@ -30,4 +31,33 @@ function setupDefaultPermission(callback) {
     })();
 }
 
-export {setupDefaultPermission}
+/**
+ * Get all permission with pagination
+ * @param paginationInfo include itemPerPage and page index information
+ * @param callback
+ */
+function getAllPermissionWithPagination(paginationInfo, callback) {
+    (async()=> {
+        let queryObj = {};
+        let count = await Permission.count(queryObj).exec();
+        let pagination = (new Pagination(paginationInfo, count)).getPagination();
+        Permission.find(queryObj)
+            .skip(pagination.minIndex)
+            .limit(pagination.itemPerPage)
+            .exec((err, permissions) => {
+                callback(err, {data: permissions, pagination});
+            });
+    })();
+}
+
+/**
+ * Get permission object by action and content type
+ * @param action
+ * @param contentType
+ */
+async function getPermissionByActAndContentType(action, contentType) {
+    let name = `${action}_${contentType}`;
+    return Permission.findOne({codeName: name}).exec();
+}
+
+export {setupDefaultPermission, getAllPermissionWithPagination, getPermissionByActAndContentType}

@@ -9,6 +9,9 @@ import slug from "slug";
 import {makeId} from "common-helper";
 import {getCorrectState} from "../../utils/state/index";
 import {postState} from "../../utils/constants";
+import {createPostMiddleware, supperAdminMiddleware} from "../../middlewares/authAdminMiddleware";
+import {deletePostMiddleware} from "../../middlewares/authAdminMiddleware";
+import {editPostMiddleware} from "../../middlewares/authAdminMiddleware";
 
 var route = express.Router();
 
@@ -25,7 +28,7 @@ route.get('/', (req, res) => {
     });
 });
 
-route.post('/', authMiddleware, (req, res) => {
+route.post('/', createPostMiddleware, (req, res) => {
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
     let slugTitle = slug(req.body.title) + "-" + makeId();
@@ -57,7 +60,7 @@ route.get('/:postSlug', (req, res) => {
     });
 });
 
-route.put('/:postSlug', (req, res) => {
+route.put('/:postSlug', editPostMiddleware, (req, res) => {
     var {postSlug} = req.params;
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
@@ -82,7 +85,7 @@ route.put('/:postSlug', (req, res) => {
     });
 });
 
-route.delete('/:postSlug', (req, res) => {
+route.delete('/:postSlug', deletePostMiddleware, (req, res) => {
     var {postSlug} = req.params;
     deletePostBySlug(postSlug, (err, data) => {
         if (err || data === null) {
