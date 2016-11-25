@@ -10,6 +10,10 @@ import {
     changePermissionMiddleware,
     deletePermissionMiddleware
 } from "../../middlewares/authAdminMiddleware";
+import {savePermission} from "../../dao/permissionDao";
+import {updatePermission} from "../../dao/permissionDao";
+import {getPermissionById} from "../../dao/permissionDao";
+import {removePermissionById} from "../../dao/permissionDao";
 
 var route = express.Router();
 
@@ -26,19 +30,50 @@ route.get('/', viewPermissionMiddleware, (req, res) => {
 });
 
 route.post('/', addPermissionMiddleware, (req, res) => {
-    res.json({message: "being implemented"});
+    let {name, codeName} = req.body;
+    let permission = {name, codeName, updatedAt: new Date(), createdAt: new Date()};
+    savePermission(permission, (err, data) => {
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
 });
 
 route.put('/:permissionId', changePermissionMiddleware, (req, res) => {
-    res.json({message: "being implemented"});
+    let permissionId = req.params.permissionId;
+    let {name, codeName} = req.body;
+    let permission = {name, codeName, updatedAt: new Date()};
+    updatePermission(permissionId, permission, (err, data) => {
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
 });
 
 route.get('/:permissionId', viewPermissionMiddleware, (req, res) => {
-    res.json({message: "being implemented"});
+    let permissionId = req.params.permissionId;
+    getPermissionById(permissionId, (err, data) => {
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
 });
 
 route.delete('/:permissionId', deletePermissionMiddleware, (req, res) => {
-    res.json({message: "being implemented"});
+    let permissionId = req.params.permissionId;
+    removePermissionById(permissionId, (err, data) => {
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
 });
 
 

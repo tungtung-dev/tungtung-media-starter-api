@@ -7,6 +7,25 @@ import asyncLib from 'async';
 import Pagination from 'pagination-js';
 
 /**
+ *
+ * @param permission
+ * @param callback
+ */
+function savePermission(permission, callback) {
+    let obj = new Permission(permission);
+    obj.save(callback);
+}
+
+/**
+ *
+ * @param permissionId
+ * @param permissionInfo
+ * @param callback
+ */
+function updatePermission(permissionId, permissionInfo, callback) {
+    Permission.findOneAndUpdate({_id: permissionId}, {$set: permissionInfo}).exec(callback);
+}
+/**
  * Insert default permission into database if it's not exist
  * @param callback
  */
@@ -60,4 +79,25 @@ async function getPermissionByActAndContentType(action, contentType) {
     return Permission.findOne({codeName: name}).exec();
 }
 
-export {setupDefaultPermission, getAllPermissionWithPagination, getPermissionByActAndContentType}
+/**
+ *
+ * @param permissionId
+ * @param callback
+ */
+function getPermissionById(permissionId, callback) {
+    Permission.findById(permissionId).exec(callback);
+}
+
+function removePermissionById(permissionId, callback) {
+    Permission.findOneAndRemove({_id: permissionId}).exec(callback);
+}
+
+export {
+    removePermissionById,
+    getPermissionById,
+    updatePermission,
+    savePermission,
+    setupDefaultPermission,
+    getAllPermissionWithPagination,
+    getPermissionByActAndContentType
+}

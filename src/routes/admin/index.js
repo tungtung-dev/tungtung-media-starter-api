@@ -3,8 +3,9 @@
  */
 import settingRoute from './settingRoute';
 import permissionRoute from './permissionRoute';
+import userPermissionRoute from './userPermissionRoute';
 import contentTypeRoute from './contentTypeRoute';
 
-export {settingRoute, permissionRoute, contentTypeRoute}
+export {settingRoute, permissionRoute, contentTypeRoute, userPermissionRoute}
 
-export default {settingRoute, permissionRoute, contentTypeRoute}
+export default {settingRoute, permissionRoute, contentTypeRoute, userPermissionRoute}
