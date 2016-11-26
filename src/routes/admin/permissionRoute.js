@@ -16,7 +16,7 @@ import {
     addPermissionMiddleware,
     changePermissionMiddleware,
     deletePermissionMiddleware
-} from "../../middlewares/authAdminMiddleware";
+} from "../../middlewares/admin/permission";
 
 var route = express.Router();
 

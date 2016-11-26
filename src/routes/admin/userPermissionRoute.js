@@ -2,8 +2,8 @@
  * Created by Tien Nguyen on 11/24/16.
  */
 import express from "express";
-import {viewUserPermissionMiddleware, changeUserPermissionMiddleware} from "../../middlewares/authAdminMiddleware";
 import {updateUserPermission, getUserPermission} from "../../dao/userDao";
+import {changeUserPermissionMiddleware, viewUserPermissionMiddleware} from "../../middlewares/admin/userPermission";
 
 var route = express.Router();
 

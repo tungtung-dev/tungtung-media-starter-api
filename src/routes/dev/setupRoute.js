@@ -4,7 +4,7 @@
 import express from "express";
 import {setupDefaultContentType} from "../../dao/contentTypeDao";
 import {setupDefaultPermission} from "../../dao/permissionDao";
-import {supperAdminMiddleware} from "../../middlewares/authAdminMiddleware";
+import {supperAdminMiddleware} from "../../middlewares/admin/permission";
 
 var route = express.Router();
 

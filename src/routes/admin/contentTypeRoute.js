@@ -4,7 +4,7 @@
 import express from "express";
 import url from 'url';
 import {getAllContentTypeWithPagination} from "../../dao/contentTypeDao";
-import {supperAdminMiddleware} from "../../middlewares/authAdminMiddleware";
+import {supperAdminMiddleware} from "../../middlewares/admin/permission";
 
 var route = express.Router();
 
