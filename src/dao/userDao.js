@@ -92,6 +92,27 @@ function totalAccount(callback) {
     User.count({}).exec(callback);
 }
 
+/**
+ * Update user permission
+ * @param username
+ * @param permissionIds
+ * @param callback
+ */
+export function updateUserPermission(username, permissionIds, callback) {
+    User.findOneAndUpdate({username: username}, {$set: {permissions: permissionIds}}).exec(callback);
+}
+
+/**
+ * Get user permissions
+ * @param username
+ * @param callback
+ */
+export function getUserPermission(username, callback) {
+    User.findOne({username: username}).populate({path: "permissions"}).exec((err, user) => {
+        callback(err, user === null ? [] : user.permissions);
+    });
+}
+
 export {
     selectUser, updateBalance, updatePassword, checkEmail, newestMember, totalAccount
 }

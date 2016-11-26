@@ -70,6 +70,27 @@ function getAllPermissionWithPagination(paginationInfo, callback) {
 }
 
 /**
+ * Get permission of content type with pagination
+ * @param contentType
+ * @param paginationInfo include itemPerPage and page index information
+ * @param callback
+ */
+function getPermissionWithPagination(contentType, paginationInfo, callback) {
+    console.log("content Type " + contentType);
+    (async()=> {
+        let queryObj = {codeName: new RegExp('.*' + contentType + '$', "g")};
+        let count = await Permission.count(queryObj).exec();
+        let pagination = (new Pagination(paginationInfo, count)).getPagination();
+        Permission.find(queryObj)
+            .skip(pagination.minIndex)
+            .limit(pagination.itemPerPage)
+            .exec((err, permissions) => {
+                callback(err, {data: permissions, pagination});
+            });
+    })();
+}
+
+/**
  * Get permission object by action and content type
  * @param action
  * @param contentType
@@ -99,5 +120,6 @@ export {
     savePermission,
     setupDefaultPermission,
     getAllPermissionWithPagination,
-    getPermissionByActAndContentType
+    getPermissionByActAndContentType,
+    getPermissionWithPagination
 }

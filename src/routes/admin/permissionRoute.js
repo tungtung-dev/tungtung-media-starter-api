@@ -2,18 +2,21 @@
  * Created by Tien Nguyen on 11/24/16.
  */
 import express from "express";
-import {getAllPermissionWithPagination} from "../../dao/permissionDao";
-import url from 'url';
+import {
+    getAllPermissionWithPagination,
+    savePermission,
+    updatePermission,
+    getPermissionById,
+    removePermissionById,
+    getPermissionWithPagination
+} from "../../dao/permissionDao";
+import url from "url";
 import {
     viewPermissionMiddleware,
     addPermissionMiddleware,
     changePermissionMiddleware,
     deletePermissionMiddleware
 } from "../../middlewares/authAdminMiddleware";
-import {savePermission} from "../../dao/permissionDao";
-import {updatePermission} from "../../dao/permissionDao";
-import {getPermissionById} from "../../dao/permissionDao";
-import {removePermissionById} from "../../dao/permissionDao";
 
 var route = express.Router();
 
@@ -40,6 +43,18 @@ route.post('/', addPermissionMiddleware, (req, res) => {
         }
     });
 });
+
+route.get('/by-content-types/:contentType', viewPermissionMiddleware, (req, res)=> {
+    let contentType = req.params.contentType;
+    getPermissionWithPagination(contentType, req.query, (err, data) => {
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
+});
+
 
 route.put('/:permissionId', changePermissionMiddleware, (req, res) => {
     let permissionId = req.params.permissionId;

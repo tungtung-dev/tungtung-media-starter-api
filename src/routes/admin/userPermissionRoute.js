@@ -2,34 +2,33 @@
  * Created by Tien Nguyen on 11/24/16.
  */
 import express from "express";
-import {
-    viewUserPermissionMiddleware,
-    addUserPermissionMiddleware,
-    changeUserPermissionMiddleware,
-    deleteUserPermissionMiddleware
-} from "../../middlewares/authAdminMiddleware";
+import {viewUserPermissionMiddleware, changeUserPermissionMiddleware} from "../../middlewares/authAdminMiddleware";
+import {updateUserPermission, getUserPermission} from "../../dao/userDao";
 
 var route = express.Router();
 
-
-route.get('/', viewUserPermissionMiddleware, (req, res) => {
-    res.json({success: false, message: "being implemented"});
+route.put('/:username', changeUserPermissionMiddleware, (req, res) => {
+    let username = req.params.username;
+    let permissionIds = req.body.permissionIds;
+    console.log("perIds = " + permissionIds + " username " + username);
+    updateUserPermission(username, permissionIds, (err, data)=>{
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
 });
 
-route.post('/', addUserPermissionMiddleware, (req, res) => {
-    res.json({success: false, message: "being implemented"});
-});
-
-route.put('/:permissionId', changeUserPermissionMiddleware, (req, res) => {
-    res.json({success: false, message: "being implemented"});
-});
-
-route.get('/:userId', viewUserPermissionMiddleware, (req, res) => {
-    res.json({success: false, message: "being implemented"});
-});
-
-route.delete('/:userId', deleteUserPermissionMiddleware, (req, res) => {
-    res.json({success: false, message: "being implemented"});
+route.get('/:username', viewUserPermissionMiddleware, (req, res) => {
+    let username = req.params.username;
+    getUserPermission(username, (err, data) => {
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
 });
 
 

@@ -2,20 +2,18 @@
  * Created by Tien Nguyen on 11/18/16.
  */
 import express from "express";
-import authMiddleware from "../../middlewares/authMiddleware";
 import {getPostBySlug, savePost, deletePostBySlug, getPostsByTagsWithPagination, updatePost} from "../../dao/postDao";
 import url from "url";
 import slug from "slug";
 import {makeId} from "common-helper";
 import {getCorrectState} from "../../utils/state/index";
 import {postState} from "../../utils/constants";
-import {createPostMiddleware, supperAdminMiddleware} from "../../middlewares/authAdminMiddleware";
-import {deletePostMiddleware} from "../../middlewares/authAdminMiddleware";
-import {editPostMiddleware} from "../../middlewares/authAdminMiddleware";
+import {createPostMiddleware, editPostMiddleware, deletePostMiddleware} from "../../middlewares/admin/post";
+import {viewPostMiddleware} from "../../middlewares/admin/post";
 
 var route = express.Router();
 
-route.get('/', (req, res) => {
+route.get('/', viewPostMiddleware, (req, res) => {
     let urlParts = url.parse(req.url, true);
     let query = urlParts.query;
     let tagSlugs = query.tagSlugs !== undefined ? query.tagSlugs.split(",") : [];
@@ -49,7 +47,7 @@ route.post('/', createPostMiddleware, (req, res) => {
     })
 });
 
-route.get('/:postSlug', (req, res) => {
+route.get('/:postSlug', viewPostMiddleware, (req, res) => {
     var {postSlug} = req.params;
     getPostBySlug(postSlug, (err, data) => {
         if (err || data === null) {

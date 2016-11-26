@@ -3,11 +3,11 @@
  */
 import express from "express";
 import {Setting} from "../../models/index";
-import {supperAdminMiddleware} from "../../middlewares/authAdminMiddleware";
+import {viewSettingMiddleware, editSettingMiddleware} from "../../middlewares/admin/setting";
 
 var route = express.Router();
 
-route.get('/', supperAdminMiddleware, function (req, res, next) {
+route.get('/', viewSettingMiddleware, function (req, res, next) {
     Setting.find().exec((err, settings) => {
         if (err) {
             res.json({success: false, message: err.message});
@@ -17,7 +17,7 @@ route.get('/', supperAdminMiddleware, function (req, res, next) {
     });
 });
 
-route.post('/', supperAdminMiddleware, function (req, res, next) {
+route.post('/', editSettingMiddleware, function (req, res, next) {
     let keys = Object.keys(req.body);
     (async() => {
         try {
