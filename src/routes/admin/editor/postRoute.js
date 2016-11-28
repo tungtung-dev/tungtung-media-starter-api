@@ -17,15 +17,15 @@ import {
 } from "../../../dao/postDao";
 import {getCorrectState} from "../../../utils/state/index";
 import slug from "slug";
-import url from "url";
 import {makeId} from "common-helper";
+import {postState} from "../../../utils/constants";
 
 var route = express.Router();
 
 route.get('/', viewPostMiddleware, (req, res) => {
     let query = req.query;
     let tagSlugs = query.tagSlugs !== undefined ? query.tagSlugs.split(',') : [];
-    let states = query.states !== undefined ? query.states.split(',') : [];
+    let states = query.states !== undefined ? query.states.split(',') : [postState.PUBLIC, postState.DRAFT, postState.TRASH];
     getPostsByTagsWithPagination(query.keyword, tagSlugs, states, query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
