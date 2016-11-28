@@ -6,7 +6,7 @@ import morgan from 'morgan';
 import config from './config';
 import userRoutes from './routes/user/index';
 import adminRoutes from './routes/admin/index';
-import devRoutes from './routes/dev/index';
+import supperAdminRoutes from './routes/super-admin/index';
 import session from 'express-session';
 
 var app = express();
@@ -51,7 +51,7 @@ app.use('/admin/permissions', adminRoutes.permissionRoute);
 app.use('/admin/user-permissions', adminRoutes.userPermissionRoute);
 app.use('/admin/content-types', adminRoutes.contentTypeRoute);
 
-app.use('/dev/', devRoutes.setupRoute);
+app.use('/super-admin/', supperAdminRoutes.setupRoute);
 
 app.listen(config.port, ()=> {
     console.log(`App listening ${config.port}!!`);

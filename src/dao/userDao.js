@@ -113,6 +113,31 @@ export function getUserPermission(username, callback) {
     });
 }
 
+/**
+ * Create the first super admin
+ * @param callback
+ */
+export function createSuperAdmin(callback) {
+    (async() => {
+        let haveSuperAdmin = (await User.count({superAdmin: true}).exec()) > 0;
+        if (!haveSuperAdmin) {
+            let defaultPassword = 'admin';
+            let hashedPassword = bscrypt.generate(defaultPassword);
+            let user = new User({
+                username: 'admin',
+                email: 'admin@admin.com',
+                password: hashedPassword,
+                superAdmin: true
+            });
+            user.save((err, u) => {
+                callback(err, {message: 'Please change the default password'});
+            });
+        } else {
+            callback(new Error('Already have super admin'));
+        }
+    })();
+}
+
 export {
     selectUser, updateBalance, updatePassword, checkEmail, newestMember, totalAccount
 }

@@ -78,20 +78,20 @@ function searchPostsByKeyword(state = [postState.PUBLIC], keyword = "", paginati
 /**
  * Query paginated Posts by array of tag slug
  * @param keyword search keyword
- * @param tagSlugs array of tag slug
+ * @param tagNames array of tag slug
  * @param state
  * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
-function getPostsByTagsWithPagination(keyword = "", tagSlugs = [], state = [postState.PUBLIC], paginationInfo, callback) {
+function getPostsByTagsWithPagination(keyword = "", tagNames = [], state = [postState.PUBLIC], paginationInfo, callback) {
     (async() => {
         try {
-            if (tagSlugs.length === 0 && keyword === "") {
+            if (tagNames.length === 0 && keyword === "") {
                 getAllPostsWithPagination(state, paginationInfo, callback);
-            } else if (tagSlugs.length === 0 && keyword !== "") {
+            } else if (tagNames.length === 0 && keyword !== "") {
                 searchPostsByKeyword(state, keyword, paginationInfo, callback);
             } else {
-                let tags = await getTagsByTagSlugs(tagSlugs);
+                let tags = await getTagsByTagSlugs(tagNames);
                 let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}, {state: {$in: state}}]}
                     : {tags: {$in: tags}, state: {$in: state}};
                 getPostsWithPagination(query, paginationInfo, callback);

@@ -81,13 +81,16 @@ function getAllTagsWithPagination(paginationInfo, callback) {
 
 /**
  * getTagsByTagSlugs
- * @param tagSlugs
+ * @param tags
  * @returns {Promise}
  */
-async function getTagsByTagSlugs(tagSlugs) {
-    console.log("tagSlugs: " + tagSlugs.length);
-    return await Tag.find({slug: {$in: tagSlugs}})
-        .exec();
+async function getTagsByTagSlugs(tags) {
+    // console.log("tagSlugs: " + tags.length);
+    let tagSlugs = tags.map(tag => {
+        return slug(tag);
+    });
+    console.log("tagSlugs: " + tags.length);
+    return await Tag.find({slug: {$in: tagSlugs}}).exec();
 }
 
 export {saveTagIfNeeded, saveTags, getAllTagsWithPagination, getTagsByTagSlugs}
