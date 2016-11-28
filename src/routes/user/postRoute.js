@@ -22,7 +22,7 @@ route.get('/', (req, res) => {
     });
 });
 
-route.get('/:postSlug', viewPostMiddleware, (req, res) => {
+route.get('/:postSlug', (req, res) => {
     var {postSlug} = req.params;
     getPostBySlug(postSlug, (err, data) => {
         if (err || data === null) {

@@ -15,6 +15,7 @@ import {postState} from "../../../utils/constants";
 import slug from 'slug';
 import url from 'url';
 import {makeId} from "common-helper";
+import {getPostBySlug} from "../../../dao/postDao";
 
 var route = express.Router();
 
@@ -33,8 +34,8 @@ route.get('/', viewPostMiddleware, (req, res) => {
 
 route.post('/', createPostMiddleware, (req, res) => {
     let tags = req.body.tags === undefined ? [] : req.body.tags;
-    let title = req.body.title === undefined ? "untitled" : req.body.title;
-    let slugTitle = slug(title) + "-" + makeId();
+    let title = req.body.title === undefined ? 'untitled' : req.body.title;
+    let slugTitle = slug(title) + '-' + makeId();
     let searchField = slug(title);
     let description = req.body.description;
 
@@ -46,11 +47,22 @@ route.post('/', createPostMiddleware, (req, res) => {
     };
     savePost(req.user._id, data, tags, (err, data) => {
         if (err) {
-            res.json({success: false, message: err === null ? "Not found" : err.message});
+            res.json({success: false, message: err === null ? 'Not found' : err.message});
         } else {
             res.json(data);
         }
     })
+});
+
+route.get('/:postSlug', (req, res) => {
+    var {postSlug} = req.params;
+    getPostBySlug(postSlug, (err, data) => {
+        if (err || data === null) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
+    });
 });
 
 route.put('/:postSlug', editPostMiddleware, (req, res) => {
