@@ -5,7 +5,6 @@ import express from "express";
 import {getPostBySlug, getPostsByTagsWithPagination} from "../../dao/postDao";
 import url from "url";
 import {postState} from "../../utils/constants";
-import {viewPostMiddleware} from "../../middlewares/admin/post";
 
 var route = express.Router();
 
