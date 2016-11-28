@@ -13,7 +13,7 @@ route.get('/', (req, res) => {
     let urlParts = url.parse(req.url, true);
     let query = urlParts.query;
     let tagSlugs = query.tagSlugs !== undefined ? query.tagSlugs.split(",") : [];
-    getPostsByTagsWithPagination(query.keyword, tagSlugs, [postState.PUBLIC], query, (err, data) => {
+    getPostsByTagsWithPagination(query.keyword, tagSlugs, [postState.TRASH], query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
