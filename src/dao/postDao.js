@@ -135,7 +135,7 @@ function updatePost(slug, postData, tags, callback) {
         try {
             let tagIds = await saveTags(tags);
             Object.assign(postData, {tags: tagIds});
-            Post.findOneAndUpdate({slug: slug}, {$set: postData})
+            Post.findOneAndUpdate({slug: slug}, {$set: postData}, {new: true})
                 .exec(callback);
         } catch (err) {
             callback(err);
