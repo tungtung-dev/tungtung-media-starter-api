@@ -41,8 +41,10 @@ route.post('/', createPostMiddleware, (req, res) => {
     let title = req.body.title === undefined ? 'untitled' : req.body.title;
     let slugTitle = slug(title) + '-' + makeId();
     let searchField = slug(title);
-    let {secondaryFeaturedImage, featuredImage, description} = req.body;
+    let {description} = req.body;
 
+    let featuredImage = req.body.featuredImage !== undefined ? isJsonString(req.body.featuredImage) ? JSON.parse(req.body.featuredImage) : req.body.featuredImage : {};
+    let secondaryFeaturedImage = req.body.secondaryFeaturedImage !== undefined ? isJsonString(req.body.secondaryFeaturedImage) ? JSON.parse(req.body.secondaryFeaturedImage) : req.body.secondaryFeaturedImage : {};
     let content = req.body.content !== undefined ? isJsonString(req.body.content) ? JSON.parse(req.body.content) : req.body.content : {};
     let customField = req.body.customField !== undefined ? isJsonString(req.body.customField) ? JSON.parse(req.body.customField) : req.body.customField : {};
     let state = getCorrectState(req.body.state);
@@ -81,9 +83,11 @@ route.put('/:postSlug', editPostMiddleware, (req, res) => {
     var {postSlug} = req.params;
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
-    let {description, secondaryFeaturedImage, featuredImage} = req.body;
+    let {description} = req.body;
     let searchField = slug(title, " ");
     let state = getCorrectState(req.body.state);
+    let featuredImage = req.body.featuredImage !== undefined ? isJsonString(req.body.featuredImage) ? JSON.parse(req.body.featuredImage) : req.body.featuredImage : {};
+    let secondaryFeaturedImage = req.body.secondaryFeaturedImage !== undefined ? isJsonString(req.body.secondaryFeaturedImage) ? JSON.parse(req.body.secondaryFeaturedImage) : req.body.secondaryFeaturedImage : {};
     let content = req.body.content !== undefined ? isJsonString(req.body.content) ? JSON.parse(req.body.content) : req.body.content : {};
     let customField = req.body.customField !== undefined ? isJsonString(req.body.customField) ? JSON.parse(req.body.customField) : req.body.customField : {};
     let data = {
