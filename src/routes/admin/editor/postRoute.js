@@ -12,7 +12,9 @@ import {getCorrectState} from "../../../utils/state/index";
 import {viewPostMiddleware} from "../../../middlewares/admin/post";
 import {getPostsByTagsWithPagination} from "../../../dao/postDao";
 import {postState} from "../../../utils/constants";
+import slug from 'slug';
 import url from 'url';
+import {makeId} from "common-helper";
 
 var route = express.Router();
 
@@ -32,10 +34,11 @@ route.get('/', viewPostMiddleware, (req, res) => {
 route.post('/', createPostMiddleware, (req, res) => {
     let tags = req.body.tags === undefined ? [] : req.body.tags;
     let title = req.body.title === undefined ? "untitled" : req.body.title;
-    let slugTitle = slug(req.body.title) + "-" + makeId();
-    let searchField = slug(req.body.title);
+    let slugTitle = slug(title) + "-" + makeId();
+    let searchField = slug(title);
     let description = req.body.description;
-    let content = req.body.content;
+
+    let content = req.body.content !== undefined ? JSON.parse(req.body.content) : {};
     let state = getCorrectState(req.body.state);
     let data = {
         title: title, slug: slugTitle, description: description, content: content, searchField: searchField,

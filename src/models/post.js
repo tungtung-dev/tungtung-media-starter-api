@@ -7,7 +7,7 @@ var postSchema = new mongoose.Schema({
     slug: {type: String, required: true},
     searchField: {type: String, required: true},
     description: {type: String},
-    content: {type: String},
+    content: {},
     state: {type: String, default: postState.DRAFT},
     tags: [{type: Schema.ObjectId, ref: 'tag'}],
     user: {type: Schema.ObjectId, ref: 'user'},

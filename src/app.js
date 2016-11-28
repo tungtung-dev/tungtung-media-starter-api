@@ -50,6 +50,8 @@ app.use('/admin/settings', adminRoutes.settingRoute);
 app.use('/admin/permissions', adminRoutes.permissionRoute);
 app.use('/admin/user-permissions', adminRoutes.userPermissionRoute);
 app.use('/admin/content-types', adminRoutes.contentTypeRoute);
+app.use('/admin/editor/posts', adminRoutes.postRoute);
+
 
 app.use('/super-admin/', supperAdminRoutes.setupRoute);
 
