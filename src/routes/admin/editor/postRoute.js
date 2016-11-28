@@ -2,28 +2,31 @@
  * Created by Tien Nguyen on 11/28/16.
  */
 import express from "express";
-import {editPostMiddleware} from "../../../middlewares/admin/post";
-import {deletePostMiddleware} from "../../../middlewares/admin/post";
-import {deletePostBySlug} from "../../../dao/postDao";
-import {updatePost} from "../../../dao/postDao";
-import {createPostMiddleware} from "../../../middlewares/admin/post";
-import {savePost} from "../../../dao/postDao";
+import {
+    editPostMiddleware,
+    deletePostMiddleware,
+    createPostMiddleware,
+    viewPostMiddleware
+} from "../../../middlewares/admin/post";
+import {
+    deletePostBySlug,
+    updatePost,
+    savePost,
+    getPostsByTagsWithPagination,
+    getPostBySlug
+} from "../../../dao/postDao";
 import {getCorrectState} from "../../../utils/state/index";
-import {viewPostMiddleware} from "../../../middlewares/admin/post";
-import {getPostsByTagsWithPagination} from "../../../dao/postDao";
-import {postState} from "../../../utils/constants";
-import slug from 'slug';
-import url from 'url';
+import slug from "slug";
+import url from "url";
 import {makeId} from "common-helper";
-import {getPostBySlug} from "../../../dao/postDao";
 
 var route = express.Router();
 
 route.get('/', viewPostMiddleware, (req, res) => {
-    let urlParts = url.parse(req.url, true);
-    let query = urlParts.query;
-    let tagSlugs = query.tagSlugs !== undefined ? query.tagSlugs.split(",") : [];
-    getPostsByTagsWithPagination(query.keyword, tagSlugs, [postState.PUBLIC, postState.DRAFT, postState.TRASH], query, (err, data) => {
+    let query = req.query;
+    let tagSlugs = query.tagSlugs !== undefined ? query.tagSlugs.split(',') : [];
+    let states = query.states !== undefined ? query.states.split(',') : [];
+    getPostsByTagsWithPagination(query.keyword, tagSlugs, states, query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
