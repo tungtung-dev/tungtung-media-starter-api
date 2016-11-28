@@ -19,6 +19,7 @@ import {getCorrectState} from "../../../utils/state/index";
 import slug from "slug";
 import {makeId} from "common-helper";
 import {postState} from "../../../utils/constants";
+import {isJsonString} from "common-helper";
 
 var route = express.Router();
 
@@ -40,10 +41,10 @@ route.post('/', createPostMiddleware, (req, res) => {
     let title = req.body.title === undefined ? 'untitled' : req.body.title;
     let slugTitle = slug(title) + '-' + makeId();
     let searchField = slug(title);
-    let {secondaryFeaturedImage, featuredImage, description,} = req.body;
+    let {secondaryFeaturedImage, featuredImage, description} = req.body;
 
-    let content = req.body.content !== undefined ? JSON.parse(req.body.content) : {};
-    let customField = req.body.customField !== undefined ? JSON.parse(req.body.customField) : {};
+    let content = req.body.content !== undefined ? isJsonString(req.body.content) ? JSON.parse(req.body.content) : req.body.content : {};
+    let customField = req.body.customField !== undefined ? isJsonString(req.body.customField) ? JSON.parse(req.body.customField) : req.body.customField : {};
     let state = getCorrectState(req.body.state);
     let data = {
         title: title,
@@ -83,8 +84,8 @@ route.put('/:postSlug', editPostMiddleware, (req, res) => {
     let {description, secondaryFeaturedImage, featuredImage} = req.body;
     let searchField = slug(title, " ");
     let state = getCorrectState(req.body.state);
-    let content = req.body.content !== undefined ? JSON.parse(req.body.content) : {};
-    let customField = req.body.customField !== undefined ? JSON.parse(req.body.customField) : {};
+    let content = req.body.content !== undefined ? isJsonString(req.body.content) ? JSON.parse(req.body.content) : req.body.content : {};
+    let customField = req.body.customField !== undefined ? isJsonString(req.body.customField) ? JSON.parse(req.body.customField) : req.body.customField : {};
     let data = {
         title: title,
         description: description,
