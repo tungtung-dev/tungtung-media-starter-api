@@ -25,7 +25,7 @@ var route = express.Router();
 route.get('/', viewPostMiddleware, (req, res) => {
     let query = req.query;
     let tags = query.tags !== undefined ? query.tags.split(',') : [];
-    let states = query.states !== undefined ? query.states.split(',') : [postState.PUBLIC, postState.DRAFT, postState.TRASH];
+    let states = query.state !== undefined ? query.state.split(',') : [postState.PUBLIC, postState.DRAFT, postState.TRASH];
     getPostsByTagsWithPagination(query.keyword, tags, states, query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
