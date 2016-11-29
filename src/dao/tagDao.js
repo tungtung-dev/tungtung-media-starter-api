@@ -11,6 +11,7 @@ import Pagination from 'pagination-js';
  * @returns {*}
  */
 async function saveTagIfNeeded(tag) {
+    tag = tag.toLowerCase();
     let sluggedTag = slug(tag);
     try {
         await Tag.update({slug: sluggedTag}, {
@@ -31,6 +32,7 @@ async function saveTagIfNeeded(tag) {
 }
 
 export function saveTagIfNeededAsync(tag, callback) {
+    tag = tag.toLowerCase();
     let sluggedTag = slug(tag);
     Tag.findOneAndUpdate({slug: sluggedTag}, {
         $set: {
@@ -131,6 +133,7 @@ async function getTagsByTagSlugs(tags) {
  * @param callback
  */
 export function updateTag(queryObj, name, callback) {
+    name = name.toLowerCase();
     let sluggedTag = slug(name);
     Tag.findOneAndUpdate(queryObj, {
         $set: {
