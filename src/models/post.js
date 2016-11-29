@@ -19,11 +19,6 @@ var postSchema = new mongoose.Schema({
 });
 
 postSchema.set('toJSON', {virtuals: true});
-postSchema.virtual('tagTexts').get(function () {
-    return this.tags.map(tag => {
-        return tag.tagName;
-    });
-});
 postSchema.index({searchField: 1}, {unique: false});
 
 module.exports = mongoose.model('post', postSchema);

@@ -7,7 +7,6 @@ import {saveTags} from "./tagDao";
 import {getTagsByTagSlugs} from "./tagDao";
 import {postState} from "../utils/constants";
 
-
 /**
  * Count Post by query
  * @param query
@@ -43,6 +42,7 @@ function getPostsWithPagination(query, paginationInfo, callback) {
                 .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
                 .populate({path: "tags"})
+                .populate({path: "user"})
                 .exec((err, data) => {
                     callback(err, {data, pagination});
                 });
@@ -78,22 +78,22 @@ function searchPostsByKeyword(state = [postState.PUBLIC], keyword = "", paginati
 /**
  * Query paginated Posts by array of tag slug
  * @param keyword search keyword
- * @param tagSlugs array of tag slug
+ * @param tags array of tag slug
  * @param state
  * @param paginationInfo include itemPerPage and page information to get pagination data
  * @param callback
  */
-function getPostsByTagsWithPagination(keyword = "", tagSlugs = [], state = [postState.PUBLIC], paginationInfo, callback) {
+function getPostsByTagsWithPagination(keyword = "", tags = [], state = [postState.PUBLIC], paginationInfo, callback) {
     (async() => {
         try {
-            if (tagSlugs.length === 0 && keyword === "") {
+            if (tags.length === 0 && keyword === "") {
                 getAllPostsWithPagination(state, paginationInfo, callback);
-            } else if (tagSlugs.length === 0 && keyword !== "") {
+            } else if (tags.length === 0 && keyword !== "") {
                 searchPostsByKeyword(state, keyword, paginationInfo, callback);
             } else {
-                let tags = await getTagsByTagSlugs(tagSlugs);
-                let query = keyword !== "" ? {$and: [{tags: {$in: tags}}, {$text: {$search: keyword}}, {state: {$in: state}}]}
-                    : {tags: {$in: tags}, state: {$in: state}};
+                let tagIds = await getTagsByTagSlugs(tags);
+                let query = keyword !== "" ? {$and: [{tags: {$in: tagIds}}, {$text: {$search: keyword}}, {state: {$in: state}}]}
+                    : {tags: {$in: tagIds}, state: {$in: state}};
                 getPostsWithPagination(query, paginationInfo, callback);
             }
         } catch (err) {
@@ -116,7 +116,8 @@ function savePost(userId, postData, tags, callback) {
             Object.assign(postData, {tags: tagIds});
             Object.assign(postData, {user: userId});
             let post = new Post(postData);
-            post.save(callback);
+            await post.save();
+            Post.populate(post, {path: 'tags user', select: {password: 0}}, callback);
         } catch (err) {
             callback(err);
         }
@@ -136,6 +137,7 @@ function updatePost(slug, postData, tags, callback) {
             let tagIds = await saveTags(tags);
             Object.assign(postData, {tags: tagIds});
             Post.findOneAndUpdate({slug: slug}, {$set: postData}, {new: true})
+                .populate({path: 'tags'})
                 .exec(callback);
         } catch (err) {
             callback(err);

@@ -19,10 +19,6 @@ var userSchema = new Schema({
     permissions: [{type: Schema.ObjectId, ref: 'permission'}]
 });
 
-userSchema.virtual('id').get(function () {
-    return this._id;
-});
-
 userSchema.set('toJSON', { virtuals: true });
 
 module.exports = mongoose.model('user', userSchema);

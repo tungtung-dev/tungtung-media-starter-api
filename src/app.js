@@ -51,6 +51,7 @@ app.use('/admin/permissions', adminRoutes.permissionRoute);
 app.use('/admin/user-permissions', adminRoutes.userPermissionRoute);
 app.use('/admin/content-types', adminRoutes.contentTypeRoute);
 app.use('/admin/posts', adminRoutes.postRoute);
+app.use('/admin/tags', adminRoutes.tagRoute);
 
 
 app.use('/super-admin/', supperAdminRoutes.setupRoute);

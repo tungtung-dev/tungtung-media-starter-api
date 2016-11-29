@@ -6,7 +6,7 @@ import slug from 'slug';
 import Pagination from 'pagination-js';
 
 /**
- * Save new tag if it is not exist
+ * Save new tag if it is not exist Async
  * @param tag
  * @returns {*}
  */
@@ -18,7 +18,7 @@ async function saveTagIfNeeded(tag) {
                 updatedAt: new Date()
             },
             $setOnInsert: {
-                tagName: tag,
+                name: tag,
                 slug: sluggedTag,
                 createdAt: new Date()
             }
@@ -28,6 +28,20 @@ async function saveTagIfNeeded(tag) {
     } catch (err) {
         return null;
     }
+}
+
+export function saveTagIfNeededAsync(tag, callback) {
+    let sluggedTag = slug(tag);
+    Tag.findOneAndUpdate({slug: sluggedTag}, {
+        $set: {
+            updatedAt: new Date()
+        },
+        $setOnInsert: {
+            name: tag,
+            slug: sluggedTag,
+            createdAt: new Date()
+        }
+    }, {upsert: true, new: true}).exec(callback);
 }
 
 /**
@@ -70,6 +84,23 @@ function getTagsWithPagination(queryObj, paginationInfo, callback) {
 }
 
 /**
+ * Get tags without pagination by query
+ * @param queryObj
+ * @param callback
+ */
+function getTagsWithoutPagination(queryObj, callback) {
+    Tag.find(queryObj).exec(callback);
+}
+
+/**
+ * Get all tag without pagination
+ * @param callback
+ */
+export function getAllTagsWithoutPagination(callback) {
+    getTagsWithoutPagination({}, callback);
+}
+
+/**
  * Get all tags with pagination
  * @param paginationInfo include item_per_page and page information to get pagination data
  * @param callback
@@ -91,6 +122,35 @@ async function getTagsByTagSlugs(tags) {
     });
     console.log("tagSlugs: " + tags.length);
     return await Tag.find({slug: {$in: tagSlugs}}).exec();
+}
+
+/**
+ * Update tag by Admin
+ * @param queryObj
+ * @param name
+ * @param callback
+ */
+export function updateTag(queryObj, name, callback) {
+    let sluggedTag = slug(name);
+    Tag.findOneAndUpdate(queryObj, {
+        $set: {
+            name: name,
+            slug: sluggedTag,
+            updatedAt: new Date()
+        },
+        $setOnInsert: {
+            createdAt: new Date()
+        }
+    }, {upsert: true, new: true}).exec(callback);
+}
+
+/**
+ * Get tag by query
+ * @param queryObj
+ * @param callback
+ */
+export function getTag(queryObj, callback) {
+    Tag.findOne(queryObj).exec(callback);
 }
 
 export {saveTagIfNeeded, saveTags, getAllTagsWithPagination, getTagsByTagSlugs}

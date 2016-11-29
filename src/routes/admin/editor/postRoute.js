@@ -3,31 +3,30 @@
  */
 import express from "express";
 import {
-    editPostMiddleware,
-    deletePostMiddleware,
-    createPostMiddleware,
-    viewPostMiddleware
-} from "../../../middlewares/admin/post";
-import {
     deletePostBySlug,
     updatePost,
     savePost,
     getPostsByTagsWithPagination,
     getPostBySlug
 } from "../../../dao/postDao";
-import {getCorrectState} from "../../../utils/state/index";
 import slug from "slug";
-import {makeId} from "common-helper";
+import {makeId, convertData} from "common-helper";
 import {postState} from "../../../utils/constants";
-import {isJsonString} from "common-helper";
+import {
+    viewPostMiddleware,
+    createPostMiddleware,
+    editPostMiddleware,
+    deletePostMiddleware
+} from "../../../middlewares/admin/post";
+import {getCorrectState} from "../../../utils/state/index";
 
 var route = express.Router();
 
 route.get('/', viewPostMiddleware, (req, res) => {
     let query = req.query;
-    let tagSlugs = query.tagSlugs !== undefined ? query.tagSlugs.split(',') : [];
+    let tags = query.tags !== undefined ? query.tags.split(',') : [];
     let states = query.states !== undefined ? query.states.split(',') : [postState.PUBLIC, postState.DRAFT, postState.TRASH];
-    getPostsByTagsWithPagination(query.keyword, tagSlugs, states, query, (err, data) => {
+    getPostsByTagsWithPagination(query.keyword, tags, states, query, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
@@ -38,27 +37,26 @@ route.get('/', viewPostMiddleware, (req, res) => {
 
 route.post('/', createPostMiddleware, (req, res) => {
     let tags = req.body.tags === undefined ? [] : req.body.tags;
-    let title = req.body.title === undefined ? 'untitled' : req.body.title;
-    let slugTitle = slug(title) + '-' + makeId();
-    let searchField = slug(title);
-    let {description} = req.body;
-
-    let featuredImage = req.body.featuredImage !== undefined ? isJsonString(req.body.featuredImage) ? JSON.parse(req.body.featuredImage) : req.body.featuredImage : {};
-    let secondaryFeaturedImage = req.body.secondaryFeaturedImage !== undefined ? isJsonString(req.body.secondaryFeaturedImage) ? JSON.parse(req.body.secondaryFeaturedImage) : req.body.secondaryFeaturedImage : {};
-    let content = req.body.content !== undefined ? isJsonString(req.body.content) ? JSON.parse(req.body.content) : req.body.content : {};
-    let customField = req.body.customField !== undefined ? isJsonString(req.body.customField) ? JSON.parse(req.body.customField) : req.body.customField : {};
     let state = getCorrectState(req.body.state);
-    let data = {
-        title: title,
-        slug: slugTitle,
-        description: description,
-        content: content,
-        searchField: searchField,
-        state: state,
-        secondaryFeaturedImage: secondaryFeaturedImage,
-        featuredImage: featuredImage,
-        customField: customField
-    };
+    let data = convertData(req.body, {
+        title: {$get: true, $default: 'untitled'},
+        description: {$get: true},
+        content: {$get: true},
+        state: {$set: state},
+        featuredImage: {$get: true},
+        secondaryFeaturedImage: {$get: true},
+        customField: {$get: true},
+        searchField: {
+            $update: (tags, objectData) => {
+                return slug(objectData.title, ' ');
+            }
+        },
+        slug: {
+            $update: (tags, objectData) => {
+                return slug(objectData.title) + '-' + makeId();
+            }
+        }
+    });
     savePost(req.user._id, data, tags, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? 'Not found' : err.message});
@@ -82,25 +80,21 @@ route.get('/:postSlug', (req, res) => {
 route.put('/:postSlug', editPostMiddleware, (req, res) => {
     var {postSlug} = req.params;
     let tags = req.body.tags === undefined ? [] : req.body.tags;
-    let title = req.body.title === undefined ? "untitled" : req.body.title;
-    let {description} = req.body;
-    let searchField = slug(title, " ");
     let state = getCorrectState(req.body.state);
-    let featuredImage = req.body.featuredImage !== undefined ? isJsonString(req.body.featuredImage) ? JSON.parse(req.body.featuredImage) : req.body.featuredImage : {};
-    let secondaryFeaturedImage = req.body.secondaryFeaturedImage !== undefined ? isJsonString(req.body.secondaryFeaturedImage) ? JSON.parse(req.body.secondaryFeaturedImage) : req.body.secondaryFeaturedImage : {};
-    let content = req.body.content !== undefined ? isJsonString(req.body.content) ? JSON.parse(req.body.content) : req.body.content : {};
-    let customField = req.body.customField !== undefined ? isJsonString(req.body.customField) ? JSON.parse(req.body.customField) : req.body.customField : {};
-    let data = {
-        title: title,
-        description: description,
-        content: content,
-        searchField: searchField,
-        state: state,
-        secondaryFeaturedImage: secondaryFeaturedImage,
-        featuredImage: featuredImage,
-        customField: customField,
-        updatedAt: new Date()
-    };
+    let data = convertData(req.body, {
+        title: {$get: true, $default: 'untitled'},
+        description: {$get: true},
+        content: {$get: true},
+        state: {$set: state},
+        featuredImage: {$get: true},
+        secondaryFeaturedImage: {$get: true},
+        customField: {$get: true},
+        searchField: {
+            $update: (tags, objectData) => {
+                return slug(objectData.title, ' ');
+            }
+        }
+    });
     updatePost(postSlug, data, tags, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});

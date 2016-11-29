@@ -6,14 +6,10 @@ import mongoose from 'mongoose';
 var Schema = mongoose.Schema;
 
 var tagSchema = new Schema({
-    tagName: String,
+    name: String,
     slug: String,
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now}
-});
-
-tagSchema.virtual('id').get(function () {
-    return this._id;
 });
 
 tagSchema.set('toJSON', {virtuals: true});
