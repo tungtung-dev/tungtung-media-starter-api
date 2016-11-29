@@ -42,7 +42,7 @@ function getPostsWithPagination(query, paginationInfo, callback) {
                 .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
                 .populate({path: "tags"})
-                .populate({path: "owner"})
+                .populate({path: "owner", select: {password: 0}})
                 .exec((err, data) => {
                     callback(err, {data, pagination});
                 });
