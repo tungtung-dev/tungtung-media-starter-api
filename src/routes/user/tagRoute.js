@@ -22,7 +22,7 @@ router.get('/', function (req, res, next) {
     });
 });
 
-route.get('/without-pagination', function (req, res, next) {
+router.get('/without-pagination', function (req, res, next) {
     getAllTagsWithoutPagination((err, data) => {
         if (err) {
             res.json({success: false, message: err.message === null ? "Unknown err" : err.message});
@@ -32,7 +32,7 @@ route.get('/without-pagination', function (req, res, next) {
     });
 });
 
-route.get('/:tag', function (req, res, next) {
+router.get('/:tag', function (req, res, next) {
     let tag = req.params.tag;
     let isValid = ObjectId.isValid(tag);
     let queryObj = isValid ? {_id: tag} : {slug: tag};
