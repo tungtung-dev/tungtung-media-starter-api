@@ -42,7 +42,7 @@ function getPostsWithPagination(query, paginationInfo, callback) {
                 .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
                 .populate({path: "tags"})
-                .populate({path: "user"})
+                .populate({path: "owner"})
                 .exec((err, data) => {
                     callback(err, {data, pagination});
                 });
@@ -114,10 +114,10 @@ function savePost(userId, postData, tags, callback) {
         try {
             let tagIds = await saveTags(tags);
             Object.assign(postData, {tags: tagIds});
-            Object.assign(postData, {user: userId});
+            Object.assign(postData, {owner: userId});
             let post = new Post(postData);
             await post.save();
-            Post.populate(post, {path: 'tags user', select: {password: 0}}, callback);
+            Post.populate(post, {path: 'tags owner', select: {password: 0}}, callback);
         } catch (err) {
             callback(err);
         }
@@ -126,18 +126,20 @@ function savePost(userId, postData, tags, callback) {
 
 /**
  * Update Post data
+ * @param userId
  * @param slug
  * @param postData
  * @param tags
  * @param callback
  */
-function updatePost(slug, postData, tags, callback) {
+function updatePost(userId, slug, postData, tags, callback) {
     (async() => {
         try {
             let tagIds = await saveTags(tags);
             Object.assign(postData, {tags: tagIds});
-            Post.findOneAndUpdate({slug: slug}, {$set: postData}, {new: true})
+            Post.findOneAndUpdate({slug: slug, owner: userId}, {$set: postData}, {new: true})
                 .populate({path: 'tags'})
+                .populate({path: 'owner', select: {password: 0}})
                 .exec(callback);
         } catch (err) {
             callback(err);

@@ -13,7 +13,7 @@ var postSchema = new mongoose.Schema({
     featuredImage: {},
     secondaryFeaturedImage: {},
     tags: [{type: Schema.ObjectId, ref: 'tag'}],
-    user: {type: Schema.ObjectId, ref: 'user'},
+    owner: {type: Schema.ObjectId, ref: 'user'},
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now}
 });

@@ -95,7 +95,7 @@ route.put('/:postSlug', editPostMiddleware, (req, res) => {
             }
         }
     });
-    updatePost(postSlug, data, tags, (err, data) => {
+    updatePost(req.user._id, postSlug, data, tags, (err, data) => {
         if (err || data === null) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
