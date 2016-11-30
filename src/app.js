@@ -10,7 +10,7 @@ import supperAdminRoutes from './routes/super-admin/index';
 import session from 'express-session';
 
 var app = express();
-mongoose.connect(config.database);
+mongoose.connect(config.database, config.dbOptions);
 
 app.use(session({
     secret: config.sessionCookie,
