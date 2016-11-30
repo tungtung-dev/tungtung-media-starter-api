@@ -7,7 +7,7 @@ export default {
         'user': 'tungtung',
         'pass': '123456'
     },
-    'port': 3333,
+    'port': 2564,
     'domainPublic': 'http://localhost:3333',
     'authApi': 'http://auth-api.tungtung.vn',
     'sessionCookie': 'tungtungtung^5',
