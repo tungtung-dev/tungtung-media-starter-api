@@ -47,12 +47,12 @@ route.post('/', createPostMiddleware, (req, res) => {
         secondaryFeaturedImage: {$get: true},
         customField: {$get: true},
         searchField: {
-            $update: (tags, objectData) => {
+            $update: (value, objectData) => {
                 return slug(objectData.title, ' ');
             }
         },
         slug: {
-            $update: (tags, objectData) => {
+            $update: (value, objectData) => {
                 return slug(objectData.title) + '-' + makeId();
             }
         }
