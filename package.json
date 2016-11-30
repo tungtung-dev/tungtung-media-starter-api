@@ -5,9 +5,9 @@
   "main": "bootstrap.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec babel-node src/app.js",
-    "prestart": "babel src --out-dir dist",
-    "start": "node bootstrap.js"
+    "dev": "NODE_PATH=./src nodemon --exec babel-node src/app.js",
+    "prestart": "NODE_PATH=./src babel src --out-dir dist",
+    "start": "NODE_PATH=./dist node bootstrap.js"
   },
   "author": "",
   "license": "ISC",

@@ -1,5 +1,5 @@
-import File from "../models/file";
-import mediaUtils from "../utils/mediaUtils";
+import File from "models/file";
+import mediaUtils from "utils/mediaUtils";
 
 export async function getFiles(folderId, userId, username){
     let query = {userId};
