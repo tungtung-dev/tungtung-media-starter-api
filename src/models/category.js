@@ -6,17 +6,23 @@ import mongoose from "mongoose";
 
 var {Schema} = mongoose;
 
-var CategorySchema = new Schema({
-    value: String,
-    text: String,
+var categorySchema = new Schema({
+    name: {type: String},
+    slug: {type: String},
+    index: {type: String},
+    icon: {type: String},
+    featuredImage: {},
+    secondaryFeaturedImage: {},
+    customField: {},
+    parent: {type: Schema.ObjectId, ref: 'category'},
     created_at: {type: Date, default: Date.now},
     updated_at: {type: Date, default: Date.now}
 });
 
-CategorySchema.virtual('id').get(function () {
+categorySchema.virtual('id').get(function () {
     return this._id;
 });
 
-CategorySchema.set('toJSON', {virtuals: true});
+categorySchema.set('toJSON', {virtuals: true});
 
-export default mongoose.model('category', CategorySchema);
+export default mongoose.model('category', categorySchema);

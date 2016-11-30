@@ -6,6 +6,7 @@ import Tag from './tag';
 import Setting from './setting';
 import Permission from './permission';
 import ContentType from './contentType';
+import Category from './category';
 
-export {File, Folder, User, Post, Tag, Setting, Permission, ContentType}
-export default {File, Folder, User, Post, Tag, Setting, Permission, ContentType}
+export {File, Folder, User, Post, Tag, Setting, Permission, ContentType, Category}
+export default {File, Folder, User, Post, Tag, Setting, Permission, ContentType, Category}

@@ -6,6 +6,7 @@ import express from "express";
 import {getAllTagsWithPagination} from "../../dao/tagDao";
 import {getAllTagsWithoutPagination} from "../../dao/tagDao";
 import {getTag} from "../../dao/tagDao";
+import {showResultToClient} from "../../utils/responseUtils";
 
 var router = express.Router();
 
@@ -14,21 +15,13 @@ var router = express.Router();
 router.get('/', function (req, res, next) {
     let paginationInfo = req.query;
     getAllTagsWithPagination(paginationInfo, (err, data) => {
-        if (err) {
-            res.json({success: false, message: err === null ? "Not found" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 });
 
 router.get('/without-pagination', function (req, res, next) {
     getAllTagsWithoutPagination((err, data) => {
-        if (err) {
-            res.json({success: false, message: err.message === null ? "Unknown err" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 });
 
@@ -37,11 +30,7 @@ router.get('/:tag', function (req, res, next) {
     let isValid = ObjectId.isValid(tag);
     let queryObj = isValid ? {_id: tag} : {slug: tag};
     getTag(queryObj, (err, data) => {
-        if (err || data === null) {
-            res.json({success: false, message: data === null ? "Not found" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 });
 

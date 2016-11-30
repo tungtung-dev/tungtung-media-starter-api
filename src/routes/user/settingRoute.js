@@ -4,16 +4,13 @@
 
 import express from "express";
 import {Setting} from "../../models/index";
+import {showResultToClient} from "../../utils/responseUtils";
 
 var route = express.Router();
 
 route.get('/', function (req, res, next) {
     Setting.find({isPrivate: false}).exec((err, settings) => {
-        if (err) {
-            res.json({success: false, message: err.message});
-        } else {
-            res.json(settings);
-        }
+        showResultToClient(err, settings, res);
     });
 });
 

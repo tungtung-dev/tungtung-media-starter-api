@@ -8,17 +8,18 @@ import {
     savePost,
     getPostsByTagsWithPagination,
     getPostBySlug
-} from "../../../dao/postDao";
+} from "../../dao/postDao";
 import slug from "slug";
 import {makeId, convertData} from "common-helper";
-import {postState} from "../../../utils/constants";
+import {postState} from "../../utils/constants";
 import {
     viewPostMiddleware,
     createPostMiddleware,
     editPostMiddleware,
     deletePostMiddleware
-} from "../../../middlewares/admin/post";
-import {getCorrectState} from "../../../utils/state/index";
+} from "../../middlewares/admin/post";
+import {getCorrectState} from "../../utils/state/index";
+import {showResultToClient} from "../../utils/responseUtils";
 
 var route = express.Router();
 
@@ -27,11 +28,7 @@ route.get('/', viewPostMiddleware, (req, res) => {
     let tags = query.tags !== undefined ? query.tags.split(',') : [];
     let states = query.state !== undefined ? query.state.split(',') : [postState.PUBLIC, postState.DRAFT, postState.TRASH];
     getPostsByTagsWithPagination(query.keyword, tags, states, query, (err, data) => {
-        if (err) {
-            res.json({success: false, message: err === null ? "Not found" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 });
 
@@ -58,22 +55,14 @@ route.post('/', createPostMiddleware, (req, res) => {
         }
     });
     savePost(req.user._id, data, tags, (err, data) => {
-        if (err) {
-            res.json({success: false, message: err === null ? 'Not found' : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     })
 });
 
 route.get('/:postSlug', (req, res) => {
     var {postSlug} = req.params;
     getPostBySlug(postSlug, (err, data) => {
-        if (err || data === null) {
-            res.json({success: false, message: err === null ? "Not found" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 });
 
@@ -90,28 +79,20 @@ route.put('/:postSlug', editPostMiddleware, (req, res) => {
         secondaryFeaturedImage: {$get: true},
         customField: {$get: true},
         searchField: {
-            $update: (tags, objectData) => {
+            $update: (value, objectData) => {
                 return slug(objectData.title, ' ');
             }
         }
     });
     updatePost(req.user._id, postSlug, data, tags, (err, data) => {
-        if (err || data === null) {
-            res.json({success: false, message: err === null ? "Not found" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 });
 
 route.delete('/:postSlug', deletePostMiddleware, (req, res) => {
     var {postSlug} = req.params;
     deletePostBySlug(postSlug, (err, data) => {
-        if (err || data === null) {
-            res.json({success: false, message: err === null ? "Not found" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 });
 
