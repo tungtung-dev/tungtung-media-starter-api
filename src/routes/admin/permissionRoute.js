@@ -9,14 +9,15 @@ import {
     getPermissionById,
     removePermissionById,
     getPermissionWithPagination
-} from "../../dao/permissionDao";
+} from "dao/permissionDao";
 import {
     viewPermissionMiddleware,
     addPermissionMiddleware,
     changePermissionMiddleware,
     deletePermissionMiddleware
-} from "../../middlewares/admin/permission";
-import {showResultToClient} from "../../utils/responseUtils";
+} from "middlewares/admin/permission";
+import {showResultToClient} from "utils/responseUtils";
+
 
 var route = express.Router();
 

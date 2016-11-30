@@ -43,9 +43,10 @@ export function getPaginatedCategoriesRoute(req, res) {
  * @param res response to user
  */
 export function getCategoryRoute(req, res) {
-    let {category} = req.query;
+    let {category} = req.params;
     let isId = isObjectId(category);
     let queryObj = isId ? {_id: category} : {slug: category};
+    console.log("isId = " + isId + " category: " + category);
     getCategory(queryObj, (err, data) => {
         showResultToClient(err, data, res);
     })

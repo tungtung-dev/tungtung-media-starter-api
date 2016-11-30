@@ -9,6 +9,7 @@ import mongoose from 'mongoose';
 import {updateTag} from "../../dao/tagDao";
 import {getTag} from "../../dao/tagDao";
 import {showResultToClient} from "../../utils/responseUtils";
+import {deleteTag} from "../../dao/tagDao";
 
 var ObjectId = mongoose.Types.ObjectId;
 var route = express.Router();
@@ -47,6 +48,15 @@ route.put('/:tag', function (req, res, next) {
     let isValid = ObjectId.isValid(tag);
     let queryObj = isValid ? {_id: tag} : {slug: tag};
     updateTag(queryObj, req.body.name, (err, data) => {
+        showResultToClient(err, data, res);
+    });
+});
+
+route.delete('/:tag', function (req, res, next) {
+    let tag = req.params.tag;
+    let isValid = ObjectId.isValid(tag);
+    let queryObj = isValid ? {_id: tag} : {slug: tag};
+    deleteTag(queryObj, (err, data) => {
         showResultToClient(err, data, res);
     });
 });

@@ -15,7 +15,11 @@ var router = express.Router();
 router.get('/', function (req, res, next) {
     let paginationInfo = req.query;
     getAllTagsWithPagination(paginationInfo, (err, data) => {
-        showResultToClient(err, data, res);
+        if (err) {
+            res.json({success: false, message: err === null ? "Not found" : err.message});
+        } else {
+            res.json(data);
+        }
     });
 });
 

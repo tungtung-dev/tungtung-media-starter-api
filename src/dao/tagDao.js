@@ -147,6 +147,10 @@ export function updateTag(queryObj, name, callback) {
     }, {upsert: true, new: true}).exec(callback);
 }
 
+export function deleteTag(queryObj, callback) {
+    Tag.findOneAndRemove(queryObj).exec(callback);
+}
+
 /**
  * Get tag by query
  * @param queryObj

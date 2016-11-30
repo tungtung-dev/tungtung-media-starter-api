@@ -16,11 +16,11 @@ export function getCategoriesWithPagination(queryObj, paginationInfo, callback) 
             let count = await Category.count(queryObj).exec();
             let pagination = (new Pagination(paginationInfo, count)).getPagination();
             Category.find(queryObj)
-                .skip(pagination.maxIndex)
+                .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
                 .exec((err, data) => {
                     callback(err, err ? null : {data, pagination});
-                })
+                });
         } catch (err) {
             callback(err);
         }
@@ -44,9 +44,17 @@ export function getCategory(queryObj, callback) {
 
 /**
  * Save category
- * @param category
+ * @param category category Object
  * @param callback
  */
 export function saveCategory(category, callback) {
-
+    (async() => {
+        let count = await Category.count({slug: category.slug}).exec();
+        if (count > 0) {
+            callback(new Error("Tag name " + category.name + " already exists!"));
+        } else {
+            let obj = new Category(category);
+            obj.save(callback);
+        }
+    })();
 }
