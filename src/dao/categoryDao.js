@@ -58,3 +58,22 @@ export function saveCategory(category, callback) {
         }
     })();
 }
+
+/**
+ *
+ * @param queryObj
+ * @param category
+ * @param callback
+ */
+export function updateCategory(queryObj, category, callback) {
+    Category.findOneAndUpdate(queryObj, {$set: category}, {new: true, multi: true}).exec(callback);
+}
+
+/**
+ * 
+ * @param queryObj
+ * @param callback
+ */
+export function deleteCategory(queryObj, callback) {
+    Category.findOneAndRemove(queryObj).exec(callback);
+}

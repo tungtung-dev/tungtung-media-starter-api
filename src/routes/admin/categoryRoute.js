@@ -7,6 +7,9 @@ import {convertData} from "common-helper";
 import slug from "slug";
 import {saveCategory} from "../../dao/categoryDao";
 import {showResultToClient} from "../../utils/responseUtils";
+import {updateCategory} from "../../dao/categoryDao";
+import {isObjectId} from "../../utils/objectIdUtils";
+import {deleteCategory} from "../../dao/categoryDao";
 
 var route = express.Router();
 
@@ -42,12 +45,37 @@ route.get('/:category', getCategoryRoute);
 
 // TODO Need add authorization middleware
 route.put('/:category', (req, res) => {
-
+    let {category} = req.params;
+    let isId = isObjectId(category);
+    let queryObj = isId ? {_id: category} : {slug: category};
+    let data = convertData(req.body, {
+        name: {$get: true, $default: "untitled"},
+        slug: {
+            $update: (value, objectData) => {
+                return slug(objectData.name.toLowerCase());
+            }
+        },
+        index: {$get: true, default: 1},
+        icon: {$get: true},
+        featuredImage: {$get: true},
+        secondaryFeaturedImage: {$get: true},
+        customField: {$get: true},
+        parent: {$get: true},
+        updatedAt: {$get: true, default: new Date()}
+    });
+    updateCategory(queryObj, data, (err, data) => {
+        showResultToClient(err, data, res);
+    });
 });
 
 // TODO Need add authorization middleware
 route.delete('/:category', (req, res) => {
-    
+    let {category} = req.params;
+    let isId = isObjectId(category);
+    let queryObj = isId ? {_id: category} : {slug: category};
+    deleteCategory(queryObj, (err, data) => {
+        showResultToClient(err, data, res);
+    });
 });
 
 export default route;
