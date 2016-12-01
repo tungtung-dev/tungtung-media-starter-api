@@ -5,19 +5,21 @@ import express from "express";
 import {getPaginatedCategoriesRoute, getAllCategoriesRoute, getCategoryRoute} from "../user/categoryRoute";
 import {convertData} from "common-helper";
 import slug from "slug";
-import {saveCategory} from "../../dao/categoryDao";
+import {saveCategory, updateCategory, deleteCategory} from "../../dao/categoryDao";
 import {showResultToClient} from "../../utils/responseUtils";
-import {updateCategory} from "../../dao/categoryDao";
 import {isObjectId} from "../../utils/objectIdUtils";
-import {deleteCategory} from "../../dao/categoryDao";
+import {
+    viewCategoryMiddleware,
+    deleteCategoryMiddleware,
+    editCategoryMiddleware,
+    createCategoryMiddleware
+} from "../../middlewares/admin/category";
 
 var route = express.Router();
 
-// TODO Need add authorization middleware
-route.get('/', getPaginatedCategoriesRoute);
+route.get('/', viewCategoryMiddleware, getPaginatedCategoriesRoute);
 
-// TODO Need add authorization middleware
-route.post('/', (req, res) => {
+route.post('/', createCategoryMiddleware, (req, res) => {
     let data = convertData(req.body, {
         name: {$get: true, $default: "untitled"},
         slug: {
@@ -37,14 +39,11 @@ route.post('/', (req, res) => {
     });
 });
 
-// TODO Need add authorization middleware
-route.get('/without-pagination', getAllCategoriesRoute);
+route.get('/without-pagination', viewCategoryMiddleware, getAllCategoriesRoute);
 
-// TODO Need add authorization middleware
-route.get('/:category', getCategoryRoute);
+route.get('/:category', viewCategoryMiddleware, getCategoryRoute);
 
-// TODO Need add authorization middleware
-route.put('/:category', (req, res) => {
+route.put('/:category', editCategoryMiddleware, (req, res) => {
     let {category} = req.params;
     let isId = isObjectId(category);
     let queryObj = isId ? {_id: category} : {slug: category};
@@ -68,8 +67,7 @@ route.put('/:category', (req, res) => {
     });
 });
 
-// TODO Need add authorization middleware
-route.delete('/:category', (req, res) => {
+route.delete('/:category', deleteCategoryMiddleware, (req, res) => {
     let {category} = req.params;
     let isId = isObjectId(category);
     let queryObj = isId ? {_id: category} : {slug: category};

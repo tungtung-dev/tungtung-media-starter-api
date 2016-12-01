@@ -14,6 +14,7 @@ var postSchema = new mongoose.Schema({
     secondaryFeaturedImage: {},
     tags: [{type: Schema.ObjectId, ref: 'tag'}],
     owner: {type: Schema.ObjectId, ref: 'user'},
+    category: {type: Schema.ObjectId, ref: 'category'},
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now}
 });

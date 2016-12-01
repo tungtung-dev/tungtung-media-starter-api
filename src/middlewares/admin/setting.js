@@ -3,6 +3,7 @@
  */
 import {checkPermission} from "../middlewareUtils";
 import {getToken} from "../middlewareUtils";
+import {processResult} from "../middlewareUtils";
 
 /**
  * Check edit post permission middleware
@@ -93,19 +94,9 @@ function deleteSettingMiddleware(req, res, next) {
     let action = 'delete';
     let contentType = 'setting';
     var token = getToken(req);
-    if (token) {
-        checkPermission(token, action, contentType, (err, user) => {
-            if (err) {
-                return res.json({success: false, message: err.message});
-            } else {
-                req.user = user;
-                req.token = token;
-                next();
-            }
-        });
-    } else {
-        return res.status(403).send({success: false, message: 'No token provided'});
-    }
+    checkPermission(token, action, contentType, (err, user) => {
+        processResult(err, user, token, req, res, next);
+    });
 }
 
 export {viewSettingMiddleware, createSettingMiddleware, editSettingMiddleware, deleteSettingMiddleware}

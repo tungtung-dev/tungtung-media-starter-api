@@ -1,7 +1,4 @@
-import jwt from "jsonwebtoken";
-import config from "../../config";
-import User from "../../models/user";
-import {getToken, checkPermission} from "../middlewareUtils";
+import {getToken, checkPermission, processResult, checkSuperAdminPermission} from "../middlewareUtils";
 
 /**
  * Verify admin user authentication middleware
@@ -12,30 +9,9 @@ import {getToken, checkPermission} from "../middlewareUtils";
  */
 function supperAdminMiddleware(req, res, next) {
     var token = getToken(req);
-    if (token) {
-        // Verify given token and get payload data
-        jwt.verify(token, config.secret, (err, payload) => {
-            if (err) {
-                return res.json({success: false, message: 'Failed to authenticate token'});
-            } else {
-                // Query admin user by payload data
-                User.findOne({_id: payload._doc._id, superAdmin: true})
-                    .select({password: 0})
-                    .then(user => {
-                        if (user) {
-                            req.user = user;
-                            req.token = token;
-                            next();
-                        } else {
-                            return res.json({success: false, message: 'Admin user not found'});
-                        }
-                    });
-            }
-        });
-    }
-    else {
-        return res.status(403).send({success: false, message: 'No token provided'});
-    }
+    checkSuperAdminPermission(token, (err, user) => {
+        processResult(err, user, token, req, res, next);
+    });
 }
 
 
@@ -50,19 +26,9 @@ function viewPermissionMiddleware(req, res, next) {
     let action = 'view';
     let contentType = 'permission';
     var token = getToken(req);
-    if (token) {
-        checkPermission(token, action, contentType, (err, user) => {
-            if (err) {
-                return res.json({success: false, message: err.message});
-            } else {
-                req.user = user;
-                req.token = token;
-                next();
-            }
-        });
-    } else {
-        return res.status(403).send({success: false, message: 'No token provided'});
-    }
+    checkPermission(token, action, contentType, (err, user) => {
+        processResult(err, user, token, req, res, next);
+    });
 }
 
 /**
@@ -76,19 +42,9 @@ function addPermissionMiddleware(req, res, next) {
     let action = 'add';
     let contentType = 'permission';
     var token = getToken(req);
-    if (token) {
-        checkPermission(token, action, contentType, (err, user) => {
-            if (err) {
-                return res.json({success: false, message: err.message});
-            } else {
-                req.user = user;
-                req.token = token;
-                next();
-            }
-        });
-    } else {
-        return res.status(403).send({success: false, message: 'No token provided'});
-    }
+    checkPermission(token, action, contentType, (err, user) => {
+        processResult(err, user, token, req, res, next);
+    });
 }
 
 /**
@@ -102,19 +58,9 @@ function changePermissionMiddleware(req, res, next) {
     let action = 'change';
     let contentType = 'permission';
     var token = getToken(req);
-    if (token) {
-        checkPermission(token, action, contentType, (err, user) => {
-            if (err) {
-                return res.json({success: false, message: err.message});
-            } else {
-                req.user = user;
-                req.token = token;
-                next();
-            }
-        });
-    } else {
-        return res.status(403).send({success: false, message: 'No token provided'});
-    }
+    checkPermission(token, action, contentType, (err, user) => {
+        processResult(err, user, token, req, res, next);
+    });
 }
 
 /**
@@ -128,19 +74,9 @@ function deletePermissionMiddleware(req, res, next) {
     let action = 'delete';
     let contentType = 'permission';
     var token = getToken(req);
-    if (token) {
-        checkPermission(token, action, contentType, (err, user) => {
-            if (err) {
-                return res.json({success: false, message: err.message});
-            } else {
-                req.user = user;
-                req.token = token;
-                next();
-            }
-        });
-    } else {
-        return res.status(403).send({success: false, message: 'No token provided'});
-    }
+    checkPermission(token, action, contentType, (err, user) => {
+        processResult(err, user, token, req, res, next);
+    });
 }
 
 export {
@@ -150,5 +86,3 @@ export {
     changePermissionMiddleware,
     deletePermissionMiddleware
 }
-
-export default {supperAdminMiddleware}

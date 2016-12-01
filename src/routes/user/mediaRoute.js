@@ -6,7 +6,7 @@ import path from "path";
 import fs from "fs";
 import mediaUtils from "../../utils/mediaUtils";
 import {folderDao, fileDao} from "../../dao/index";
-import authMiddleware from "../../middlewares/authMiddleware";
+import {authMiddleware} from "../../middlewares/authMiddleware";
 
 var route = express.Router();
 

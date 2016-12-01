@@ -1,20 +1,20 @@
+/**
+ * Created by Tien Nguyen on 12/1/16.
+ */
 import {checkPermission} from "../middlewareUtils";
 import {getToken} from "../middlewareUtils";
 import {processResult} from "../middlewareUtils";
-/**
- * Created by Tien Nguyen on 11/26/16.
- */
 
 /**
- * Check view post permission middleware
+ * Check view post category middleware
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function viewPostMiddleware(req, res, next) {
+function viewCategoryMiddleware(req, res, next) {
     let action = 'view';
-    let contentType = 'post';
+    let contentType = 'category';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
@@ -22,15 +22,15 @@ function viewPostMiddleware(req, res, next) {
 }
 
 /**
- * Check create post permission middleware
+ * Check create post category middleware
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function createPostMiddleware(req, res, next) {
+function createCategoryMiddleware(req, res, next) {
     let action = 'add';
-    let contentType = 'post';
+    let contentType = 'category';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
@@ -38,15 +38,15 @@ function createPostMiddleware(req, res, next) {
 }
 
 /**
- * Check edit post permission middleware
+ * Check edit post category middleware
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function editPostMiddleware(req, res, next) {
+function editCategoryMiddleware(req, res, next) {
     let action = 'change';
-    let contentType = 'post';
+    let contentType = 'category';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
@@ -54,19 +54,19 @@ function editPostMiddleware(req, res, next) {
 }
 
 /**
- * Check edit post permission middleware
+ * Check edit post category middleware
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function deletePostMiddleware(req, res, next) {
+function deleteCategoryMiddleware(req, res, next) {
     let action = 'delete';
-    let contentType = 'post';
+    let contentType = 'category';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
     });
 }
 
-export {viewPostMiddleware, createPostMiddleware, editPostMiddleware, deletePostMiddleware}
+export {viewCategoryMiddleware, createCategoryMiddleware, editCategoryMiddleware, deleteCategoryMiddleware}

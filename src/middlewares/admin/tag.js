@@ -1,20 +1,20 @@
+/**
+ * Created by Tien Nguyen on 12/1/16.
+ */
 import {checkPermission} from "../middlewareUtils";
 import {getToken} from "../middlewareUtils";
 import {processResult} from "../middlewareUtils";
-/**
- * Created by Tien Nguyen on 11/26/16.
- */
 
 /**
- * Check view post permission middleware
+ * Check view post category middleware
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function viewPostMiddleware(req, res, next) {
+function viewTagMiddleware(req, res, next) {
     let action = 'view';
-    let contentType = 'post';
+    let contentType = 'tag';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
@@ -22,15 +22,15 @@ function viewPostMiddleware(req, res, next) {
 }
 
 /**
- * Check create post permission middleware
+ * Check create post category middleware
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function createPostMiddleware(req, res, next) {
+function createTagMiddleware(req, res, next) {
     let action = 'add';
-    let contentType = 'post';
+    let contentType = 'tag';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
@@ -38,15 +38,15 @@ function createPostMiddleware(req, res, next) {
 }
 
 /**
- * Check edit post permission middleware
+ * Check edit post category middleware
  * @param req
  * @param res
  * @param next
  * @returns {*}
  */
-function editPostMiddleware(req, res, next) {
+function editTagMiddleware(req, res, next) {
     let action = 'change';
-    let contentType = 'post';
+    let contentType = 'tag';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
@@ -60,13 +60,13 @@ function editPostMiddleware(req, res, next) {
  * @param next
  * @returns {*}
  */
-function deletePostMiddleware(req, res, next) {
+function deleteTagMiddleware(req, res, next) {
     let action = 'delete';
-    let contentType = 'post';
+    let contentType = 'tag';
     var token = getToken(req);
     checkPermission(token, action, contentType, (err, user) => {
         processResult(err, user, token, req, res, next);
     });
 }
 
-export {viewPostMiddleware, createPostMiddleware, editPostMiddleware, deletePostMiddleware}
+export {viewTagMiddleware, createTagMiddleware, editTagMiddleware, deleteTagMiddleware}

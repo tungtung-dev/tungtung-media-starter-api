@@ -18,11 +18,11 @@ function countPosts(query, callback) {
 
 /**
  * Get Post with correct slug title
- * @param slug
+ * @param queryObj
  * @param callback
  */
-function getPostBySlug(slug, callback) {
-    Post.findOne({slug: slug})
+function getPostBySlug(queryObj, callback) {
+    Post.findOne(queryObj)
         .populate({path: "tags"})
         .exec(callback);
 }

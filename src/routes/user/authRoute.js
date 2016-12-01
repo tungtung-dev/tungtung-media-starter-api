@@ -2,13 +2,13 @@ import express from "express";
 import validator from "validator";
 import base64Img from "base64-img";
 import User from "../../models/user";
-import authMiddleware from "../../middlewares/authMiddleware";
 import AuthSocial from "../../controllers/authSocial";
 import bscrypt from "../../utils/bcrypt";
 import _ from "lodash";
 import {createTokenAndGetUser} from "../../utils/index";
 import EmailSender from "../../controllers/emailSender";
 import passwordDao from "../../dao/passwordDao";
+import {authMiddleware} from "../../middlewares/authMiddleware";
 
 var route = express.Router();
 

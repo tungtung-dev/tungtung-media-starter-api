@@ -33,6 +33,16 @@ const models = [
     {codeName: 'change_session', name: 'Can change session', contentType: '58357c0debc5d85700775f0b'},
     {codeName: 'delete_session', name: 'Can delete session', contentType: '58357c0debc5d85700775f0b'},
 
+    {codeName: 'view_category', name: 'Can view category', contentType: '58357c0debc5d85700775f0b'},
+    {codeName: 'add_category', name: 'Can add category', contentType: '58357c0debc5d85700775f0b'},
+    {codeName: 'change_category', name: 'Can change category', contentType: '58357c0debc5d85700775f0b'},
+    {codeName: 'delete_category', name: 'Can delete category', contentType: '58357c0debc5d85700775f0b'},
+
+    {codeName: 'view_tag', name: 'Can view tag', contentType: '58357c0debc5d85700775f0b'},
+    {codeName: 'add_tag', name: 'Can add tag', contentType: '58357c0debc5d85700775f0b'},
+    {codeName: 'change_tag', name: 'Can change tag', contentType: '58357c0debc5d85700775f0b'},
+    {codeName: 'delete_tag', name: 'Can delete tag', contentType: '58357c0debc5d85700775f0b'},
+
     {codeName: 'view_post', name: 'Can view post', contentType: '58357c0debc5d85700775f0c'},
     {codeName: 'add_post', name: 'Can add post', contentType: '58357c0debc5d85700775f0c'},
     {codeName: 'change_post', name: 'Can change post', contentType: '58357c0debc5d85700775f0c'},

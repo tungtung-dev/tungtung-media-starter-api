@@ -10,7 +10,7 @@ const AUTHORIZATION_START_POSITION = 4;
  * @param req
  * @returns {*}
  */
-function getTokenFromAuthorization(req) {
+export function getTokenFromAuthorization(req) {
     var token = req.headers['authorization'];
     if (token != null) {
         return token.substr(AUTHORIZATION_START_POSITION, token.length);
@@ -23,7 +23,7 @@ function getTokenFromAuthorization(req) {
  * @param req
  * @returns {*}
  */
-function getToken(req) {
+export function getToken(req) {
     var token = req.body.token || req.session.token || req.query.userToken || req.headers['x-access-token']
         || getTokenFromAuthorization(req);
 
@@ -37,30 +37,117 @@ function getToken(req) {
  * @param contentType
  * @param callback
  */
-function checkPermission(token, action, contentType, callback) {
+export function checkPermission(token, action, contentType, callback) {
     // Verify given token and get payload data
-    jwt.verify(token, config.secret, (err, payload) => {
-        if (err) {
-            callback(err);
-        } else {
-            (async() => {
-                let permission = await getPermissionByActAndContentType(action, contentType);
-                // Query user by payload data
-                let queryObj = {
-                    _id: payload._doc._id,
-                    $or: [{superAdmin: true}, {permissions: permission._id}]
-                };
-                selectUser(queryObj, (err, user) => {
-                    if (!err && user) {
-                        callback(null, user);
-                    }
-                    else {
-                        callback(new Error(`Không có quyền '${permission.name}'`));
-                    }
-                });
-            })();
-        }
-    });
+    if (token) {
+        jwt.verify(token, config.secret, (err, payload) => {
+            if (err) {
+                callback(err);
+            } else {
+                (async() => {
+                    let permission = await getPermissionByActAndContentType(action, contentType);
+                    // Query user by payload data
+                    let queryObj = {
+                        _id: payload._doc._id,
+                        $or: [{superAdmin: true}, {permissions: permission._id}]
+                    };
+                    selectUser(queryObj, (err, user) => {
+                        if (!err && user) {
+                            callback(null, user);
+                        }
+                        else {
+                            callback(new Error(`Không có quyền '${permission.name}'`));
+                        }
+                    });
+                })();
+            }
+        });
+    } else {
+        callback(new Error(`No token provided`));
+    }
 }
 
-export {getTokenFromAuthorization, getToken, checkPermission}
+/**
+ * Checking if it is Super admin
+ * @param token
+ * @param callback
+ */
+export function checkSuperAdminPermission(token, callback) {
+    // Verify given token and get payload data
+    if (token) {
+        jwt.verify(token, config.secret, (err, payload) => {
+            if (err) {
+                callback(err);
+            } else {
+                (async() => {
+                    // Query user by payload data
+                    let queryObj = {
+                        _id: payload._doc._id,
+                        superAdmin: true
+                    };
+                    selectUser(queryObj, (err, user) => {
+                        if (!err && user) {
+                            callback(null, user);
+                        }
+                        else {
+                            callback(new Error(`Not Super admin user`));
+                        }
+                    });
+                })();
+            }
+        });
+    } else {
+        callback(new Error(`No token provided`));
+    }
+}
+
+/**
+ * Checking if it is Super admin
+ * @param token
+ * @param callback
+ */
+export function checkNormalUser(token, callback) {
+    // Verify given token and get payload data
+    if (token) {
+        jwt.verify(token, config.secret, (err, payload) => {
+            if (err) {
+                callback(err);
+            } else {
+                (async() => {
+                    // Query user by payload data
+                    let queryObj = {_id: payload._doc._id};
+                    selectUser(queryObj, (err, user) => {
+                        if (!err && user) {
+                            callback(null, user);
+                        }
+                        else {
+                            callback(new Error(`Not Super admin user`));
+                        }
+                    });
+                })();
+            }
+        });
+    } else {
+        callback(new Error(`No token provided`));
+    }
+}
+
+/**
+ *
+ * @param err
+ * @param user
+ * @param token
+ * @param req
+ * @param res
+ * @param next
+ * @returns {*}
+ */
+export function processResult(err, user, token, req, res, next) {
+    if (err) {
+        return res.json({success: false, message: err.message});
+    } else {
+        req.user = user;
+        req.token = token;
+        next();
+    }
+}

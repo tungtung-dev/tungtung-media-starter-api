@@ -20,6 +20,7 @@ import {
 } from "../../middlewares/admin/post";
 import {getCorrectState} from "../../utils/state/index";
 import {showResultToClient} from "../../utils/responseUtils";
+import {getPostBySlugOrIdRoute} from "../user/postRoute";
 
 var route = express.Router();
 
@@ -59,12 +60,7 @@ route.post('/', createPostMiddleware, (req, res) => {
     })
 });
 
-route.get('/:postSlug', (req, res) => {
-    var {postSlug} = req.params;
-    getPostBySlug(postSlug, (err, data) => {
-        showResultToClient(err, data, res);
-    });
-});
+route.get('/:postSlug', getPostBySlugOrIdRoute);
 
 route.put('/:postSlug', editPostMiddleware, (req, res) => {
     var {postSlug} = req.params;
