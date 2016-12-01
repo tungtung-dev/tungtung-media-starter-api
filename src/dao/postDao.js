@@ -1,11 +1,11 @@
 /**
  * Created by Tien Nguyen on 11/18/16.
  */
-import {Post} from '../models/index';
-import Pagination from 'pagination-js';
-import {saveTags} from "./tagDao";
-import {getTagsByTagSlugs} from "./tagDao";
-import {postState} from "../utils/constants";
+import {Post, Category} from "models/index";
+import Pagination from "pagination-js";
+import {saveTags, getTagsByTagSlugs} from "./tagDao";
+import {postState} from "utils/constants";
+import {isObjectId} from "utils/objectIdUtils";
 
 /**
  * Count Post by query
@@ -102,6 +102,35 @@ function getPostsByTagsWithPagination(keyword = "", tags = [], state = [postStat
     })();
 }
 
+export function getPosts(category = "", keyword = "", tags = [], state = [postState.PUBLIC], paginationInfo, callback) {
+    (async() => {
+        try {
+            let query = {};
+            if (tags.length === 0 && keyword === "") {
+                query = {state: {$in: state}};
+            } else if (tags.length === 0 && keyword !== "") {
+                query = {$text: {$search: keyword}, state: {$in: state}};
+            } else {
+                let tagIds = await getTagsByTagSlugs(tags);
+                query = keyword !== "" ? {$and: [{tags: {$in: tagIds}}, {$text: {$search: keyword}}, {state: {$in: state}}]}
+                    : {tags: {$in: tagIds}, state: {$in: state}};
+            }
+            if (category !== "") {
+                let cateQuery = isObjectId(category) ? {_id: category} : {slug: category};
+                try {
+                    let categoryObj = await Category.findOne(cateQuery).exec();
+                    Object.assign(query, {categoryId: categoryObj._id});
+                } catch (err) {
+                    console.log("Not find category");
+                }
+            }
+            getPostsWithPagination(query, paginationInfo, callback);
+        } catch (err) {
+            callback(err);
+        }
+    })();
+}
+
 /**
  * Save Post data
  * @param userId
@@ -112,12 +141,18 @@ function getPostsByTagsWithPagination(keyword = "", tags = [], state = [postStat
 function savePost(userId, postData, tags, callback) {
     (async() => {
         try {
-            let tagIds = await saveTags(tags);
-            Object.assign(postData, {tags: tagIds});
-            Object.assign(postData, {owner: userId});
-            let post = new Post(postData);
-            await post.save();
-            Post.populate(post, {path: 'tags owner', select: {password: 0}}, callback);
+            let categoryCount = await Category.count({_id: postData.categoryId}).exec();
+            if (categoryCount > 0) {
+                let tagIds = await saveTags(tags);
+                Object.assign(postData, {tags: tagIds});
+                Object.assign(postData, {owner: userId});
+                let post = new Post(postData);
+                await post.save();
+                Post.populate(post, {path: 'tags owner', select: {password: 0}}, callback);
+            } else {
+                callback(new Error('Please check the categoryId field'));
+            }
+
         } catch (err) {
             callback(err);
         }
@@ -126,21 +161,26 @@ function savePost(userId, postData, tags, callback) {
 
 /**
  * Update Post data
- * @param userId
- * @param slug
+ * @param queryObj
  * @param postData
  * @param tags
  * @param callback
  */
-function updatePost(userId, slug, postData, tags, callback) {
+function updatePost(queryObj, postData, tags, callback) {
     (async() => {
         try {
-            let tagIds = await saveTags(tags);
-            Object.assign(postData, {tags: tagIds});
-            Post.findOneAndUpdate({slug: slug, owner: userId}, {$set: postData}, {new: true})
-                .populate({path: 'tags'})
-                .populate({path: 'owner', select: {password: 0}})
-                .exec(callback);
+            let categoryCount = await Category.count({_id: postData.categoryId}).exec();
+            console.log("categoryCount " + categoryCount);
+            if (categoryCount > 0) {
+                let tagIds = await saveTags(tags);
+                Object.assign(postData, {tags: tagIds});
+                Post.findOneAndUpdate(queryObj, {$set: postData}, {new: true})
+                    .populate({path: 'tags'})
+                    .populate({path: 'owner', select: {password: 0}})
+                    .exec(callback);
+            } else {
+                callback(new Error('Please check the categoryId field'));
+            }
         } catch (err) {
             callback(err);
         }
