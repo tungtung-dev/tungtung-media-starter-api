@@ -13,6 +13,8 @@ route.get('/', getPaginatedCategoriesRoute);
 
 route.get('/without-pagination', getAllCategoriesRoute);
 
+route.get('/sub-categories/:category', getSubCategoryRoute);
+
 route.get('/:category', getCategoryRoute);
 
 /**
@@ -49,6 +51,27 @@ export function getCategoryRoute(req, res) {
     console.log("isId = " + isId + " category: " + category);
     getCategory(queryObj, (err, data) => {
         showResultToClient(err, data, res);
+    })
+}
+
+/**
+ *
+ * @param req
+ * @param res
+ */
+export function getSubCategoryRoute(req, res) {
+    let {category} = req.params;
+    let isId = isObjectId(category);
+    let queryObj = isId ? {_id: category} : {slug: category};
+    console.log("isId = " + isId + " category: " + category);
+    getCategory(queryObj, (err, category) => {
+        if (err || category === null) {
+            showResultToClient(err, category, res);
+        } else {
+            getCategoriesWithPagination({parentId: category._id}, req.query, (err, data) => {
+                showResultToClient(err, data, res);
+            });
+        }
     })
 }
 

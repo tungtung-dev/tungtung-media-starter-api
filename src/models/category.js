@@ -14,7 +14,7 @@ var categorySchema = new Schema({
     featuredImage: {},
     secondaryFeaturedImage: {},
     customField: {},
-    parent: {type: Schema.ObjectId, ref: 'category'},
+    parentId: {type: Schema.ObjectId, ref: 'category'},
     created_at: {type: Date, default: Date.now},
     updated_at: {type: Date, default: Date.now}
 });

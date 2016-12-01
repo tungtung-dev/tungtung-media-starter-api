@@ -14,6 +14,7 @@ import {
     editCategoryMiddleware,
     createCategoryMiddleware
 } from "../../middlewares/admin/category";
+import {getSubCategoryRoute} from "../user/categoryRoute";
 
 var route = express.Router();
 
@@ -32,7 +33,7 @@ route.post('/', createCategoryMiddleware, (req, res) => {
         featuredImage: {$get: true},
         secondaryFeaturedImage: {$get: true},
         customField: {$get: true},
-        parent: {$get: true}
+        parentId: {$get: true}
     });
     saveCategory(data, (err, data) => {
         showResultToClient(err, data, res);
@@ -40,6 +41,8 @@ route.post('/', createCategoryMiddleware, (req, res) => {
 });
 
 route.get('/without-pagination', viewCategoryMiddleware, getAllCategoriesRoute);
+
+route.get('/sub-categories/:category', viewCategoryMiddleware, getSubCategoryRoute);
 
 route.get('/:category', viewCategoryMiddleware, getCategoryRoute);
 
