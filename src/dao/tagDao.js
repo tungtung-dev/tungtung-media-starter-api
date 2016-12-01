@@ -66,9 +66,10 @@ async function saveTags(tags) {
  * Get tags with pagination by query
  * @param queryObj query object: ex: {}, {_id: "123"}
  * @param paginationInfo include item_per_page and page information to get pagination data
+ * @param orderByObj
  * @param callback
  */
-function getTagsWithPagination(queryObj, paginationInfo, callback) {
+function getTagsWithPagination(queryObj, paginationInfo, orderByObj, callback) {
     (async() => {
         try {
             let count = await Tag.count(queryObj).exec();
@@ -76,6 +77,7 @@ function getTagsWithPagination(queryObj, paginationInfo, callback) {
             Tag.find(queryObj)
                 .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
+                .sort(orderByObj)
                 .exec((err, data) => {
                     callback(err, {data, pagination});
                 });
@@ -88,28 +90,33 @@ function getTagsWithPagination(queryObj, paginationInfo, callback) {
 /**
  * Get tags without pagination by query
  * @param queryObj
+ * @param orderByObj
  * @param callback
  */
-function getTagsWithoutPagination(queryObj, callback) {
-    Tag.find(queryObj).exec(callback);
+function getTagsWithoutPagination(queryObj, orderByObj, callback) {
+    Tag.find(queryObj)
+        .sort(orderByObj)
+        .exec(callback);
 }
 
 /**
  * Get all tag without pagination
+ * @param orderByObj
  * @param callback
  */
-export function getAllTagsWithoutPagination(callback) {
-    getTagsWithoutPagination({}, callback);
+export function getAllTagsWithoutPagination(orderByObj, callback) {
+    getTagsWithoutPagination({}, orderByObj, callback);
 }
 
 /**
  * Get all tags with pagination
  * @param paginationInfo include item_per_page and page information to get pagination data
+ * @param orderByObj
  * @param callback
  */
-function getAllTagsWithPagination(paginationInfo, callback) {
+function getAllTagsWithPagination(paginationInfo, orderByObj, callback) {
     let queryObj = {};
-    getTagsWithPagination(queryObj, paginationInfo, callback);
+    getTagsWithPagination(queryObj, paginationInfo, orderByObj, callback);
 }
 
 /**

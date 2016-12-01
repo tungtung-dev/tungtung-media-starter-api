@@ -6,6 +6,7 @@ import {getCategoriesWithPagination, getCategoriesWithoutPagination} from "../..
 import {isObjectId} from "../../utils/objectIdUtils";
 import {getCategory} from "../../dao/categoryDao";
 import {showResultToClient} from "../../utils/responseUtils";
+import {getOrderByObject} from "../../utils/orderByManager";
 
 var route = express.Router();
 
@@ -23,7 +24,8 @@ route.get('/:category', getCategoryRoute);
  * @param res response to user
  */
 export function getAllCategoriesRoute(req, res) {
-    getCategoriesWithoutPagination({}, (err, data) => {
+    let orderBy = getOrderByObject(req.query);
+    getCategoriesWithoutPagination({}, orderBy, (err, data) => {
         showResultToClient(err, data, res);
     });
 }
@@ -34,7 +36,8 @@ export function getAllCategoriesRoute(req, res) {
  * @param res response to user
  */
 export function getPaginatedCategoriesRoute(req, res) {
-    getCategoriesWithPagination({}, req.query, (err, data) => {
+    let orderBy = getOrderByObject(req.query);
+    getCategoriesWithPagination({}, req.query, orderBy, (err, data) => {
         showResultToClient(err, data, res);
     });
 }
@@ -48,7 +51,6 @@ export function getCategoryRoute(req, res) {
     let {category} = req.params;
     let isId = isObjectId(category);
     let queryObj = isId ? {_id: category} : {slug: category};
-    console.log("isId = " + isId + " category: " + category);
     getCategory(queryObj, (err, data) => {
         showResultToClient(err, data, res);
     })
@@ -63,12 +65,12 @@ export function getSubCategoryRoute(req, res) {
     let {category} = req.params;
     let isId = isObjectId(category);
     let queryObj = isId ? {_id: category} : {slug: category};
-    console.log("isId = " + isId + " category: " + category);
+    let orderBy = getOrderByObject(req.query);
     getCategory(queryObj, (err, category) => {
         if (err || category === null) {
             showResultToClient(err, category, res);
         } else {
-            getCategoriesWithPagination({parentId: category._id}, req.query, (err, data) => {
+            getCategoriesWithPagination({parentId: category._id}, req.query, orderBy, (err, data) => {
                 showResultToClient(err, data, res);
             });
         }

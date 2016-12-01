@@ -28,7 +28,7 @@ route.post('/', createCategoryMiddleware, (req, res) => {
                 return slug(objectData.name.toLowerCase());
             }
         },
-        index: {$get: true, default: 1},
+        index: {$get: true, $default: 1},
         icon: {$get: true},
         featuredImage: {$get: true},
         secondaryFeaturedImage: {$get: true},
@@ -51,18 +51,18 @@ route.put('/:category', editCategoryMiddleware, (req, res) => {
     let isId = isObjectId(category);
     let queryObj = isId ? {_id: category} : {slug: category};
     let data = convertData(req.body, {
-        name: {$get: true, $default: "untitled"},
+        name: {$get: true},
         slug: {
             $update: (value, objectData) => {
-                return slug(objectData.name.toLowerCase());
+                return objectData.name ? slug(objectData.name.toLowerCase()) : value;
             }
         },
-        index: {$get: true, default: 1},
+        index: {$get: true},
         icon: {$get: true},
         featuredImage: {$get: true},
         secondaryFeaturedImage: {$get: true},
         customField: {$get: true},
-        parent: {$get: true},
+        parentId: {$get: true},
         updatedAt: {$get: true, default: new Date()}
     });
     updateCategory(queryObj, data, (err, data) => {

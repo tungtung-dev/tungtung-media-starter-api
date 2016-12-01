@@ -15,8 +15,8 @@ var categorySchema = new Schema({
     secondaryFeaturedImage: {},
     customField: {},
     parentId: {type: Schema.ObjectId, ref: 'category'},
-    created_at: {type: Date, default: Date.now},
-    updated_at: {type: Date, default: Date.now}
+    createdAt: {type: Date, default: Date.now},
+    updatedAt: {type: Date, default: Date.now}
 });
 
 categorySchema.virtual('id').get(function () {

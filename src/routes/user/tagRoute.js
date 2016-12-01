@@ -7,6 +7,7 @@ import {getAllTagsWithPagination} from "../../dao/tagDao";
 import {getAllTagsWithoutPagination} from "../../dao/tagDao";
 import {getTag} from "../../dao/tagDao";
 import {showResultToClient} from "../../utils/responseUtils";
+import {getOrderByObject} from "../../utils/orderByManager";
 
 var router = express.Router();
 
@@ -29,7 +30,8 @@ export function getTagRoute(req, res) {
 
 export function getTagsRoute(req, res) {
     let paginationInfo = req.query;
-    getAllTagsWithPagination(paginationInfo, (err, data) => {
+    let orderBy = getOrderByObject(req.query);
+    getAllTagsWithPagination(paginationInfo, orderBy, (err, data) => {
         if (err) {
             res.json({success: false, message: err === null ? "Not found" : err.message});
         } else {
@@ -39,7 +41,8 @@ export function getTagsRoute(req, res) {
 }
 
 export function getTagsWithoutPaginationRoute(req, res, next) {
-    getAllTagsWithoutPagination((err, data) => {
+    let orderBy = getOrderByObject(req.query);
+    getAllTagsWithoutPagination(orderBy, (err, data) => {
         showResultToClient(err, data, res);
     });
 }

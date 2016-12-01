@@ -17,6 +17,7 @@ import {showResultToClient} from "utils/responseUtils";
 import {getPostBySlugOrIdRoute} from "routes/user/postRoute";
 import {isObjectId} from "../../utils/objectIdUtils";
 import {getCorrectStateAsync} from "../../utils/state/index";
+import {getOrderByObject} from "../../utils/orderByManager";
 
 var route = express.Router();
 
@@ -25,7 +26,8 @@ route.get('/', viewPostMiddleware, (req, res) => {
     let {categoryId} = query;
     let tags = query.tags !== undefined ? query.tags.split(',') : [];
     let states = query.state !== undefined ? query.state.split(',') : [postState.PUBLIC, postState.DRAFT, postState.TRASH];
-    getPosts(categoryId, query.keyword, tags, states, query, (err, data) => {
+    let orderBy = getOrderByObject(req.query);
+    getPosts(categoryId, query.keyword, tags, states, query, orderBy, (err, data) => {
         showResultToClient(err, data, res);
     });
 });

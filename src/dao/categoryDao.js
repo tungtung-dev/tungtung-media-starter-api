@@ -8,9 +8,10 @@ import Pagination from 'pagination-js';
  * Get Categories with query and pagination
  * @param queryObj
  * @param paginationInfo
+ * @param orderByObj
  * @param callback
  */
-export function getCategoriesWithPagination(queryObj, paginationInfo, callback) {
+export function getCategoriesWithPagination(queryObj, paginationInfo, orderByObj, callback) {
     (async() => {
         try {
             let count = await Category.count(queryObj).exec();
@@ -18,6 +19,7 @@ export function getCategoriesWithPagination(queryObj, paginationInfo, callback) 
             Category.find(queryObj)
                 .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
+                .sort(orderByObj)
                 .exec((err, data) => {
                     callback(err, err ? null : {data, pagination});
                 });
@@ -30,10 +32,12 @@ export function getCategoriesWithPagination(queryObj, paginationInfo, callback) 
 /**
  * Get Categories with query
  * @param queryObj
+ * @param orderByObj
  * @param callback
  */
-export function getCategoriesWithoutPagination(queryObj, callback) {
+export function getCategoriesWithoutPagination(queryObj, orderByObj, callback) {
     Category.find(queryObj)
+        .sort(orderByObj)
         .exec(callback)
 }
 

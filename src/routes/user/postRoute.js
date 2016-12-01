@@ -2,17 +2,19 @@
  * Created by Tien Nguyen on 11/18/16.
  */
 import express from "express";
-import {getPostBySlug, getPosts} from "../../dao/postDao";
-import {postState} from "../../utils/constants";
-import {showResultToClient} from "../../utils/responseUtils";
-import {isObjectId} from "../../utils/objectIdUtils";
+import {getPostBySlug, getPosts} from "dao/postDao";
+import {postState} from "utils/constants";
+import {showResultToClient} from "utils/responseUtils";
+import {isObjectId} from "utils/objectIdUtils";
+import {getOrderByObject} from "utils/orderByManager";
 
 var route = express.Router();
 
 route.get('/', (req, res) => {
-    let {keyword,categoryId} = req.query;
+    let {keyword, categoryId} = req.query;
     let tags = req.query.tags !== undefined ? req.query.tags.split(",") : [];
-    getPosts(categoryId, keyword, tags, [postState.DRAFT], req.query, (err, data) => {
+    let orderBy = getOrderByObject(req.query);
+    getPosts(categoryId, keyword, tags, [postState.PUBLIC], req.query, orderBy, (err, data) => {
         showResultToClient(err, data, res);
     });
 });

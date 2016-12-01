@@ -24,6 +24,7 @@ function countPosts(query, callback) {
 function getPostBySlug(queryObj, callback) {
     Post.findOne(queryObj)
         .populate({path: "tags"})
+        .populate({path: "owner", select: {password: 0}})
         .exec(callback);
 }
 
@@ -31,9 +32,10 @@ function getPostBySlug(queryObj, callback) {
  * Query paginated Posts
  * @param query query Object
  * @param paginationInfo include itemPerPage and page information to get pagination data
+ * @param orderBy
  * @param callback
  */
-function getPostsWithPagination(query, paginationInfo, callback) {
+function getPostsWithPagination(query, paginationInfo, orderBy, callback) {
     (async() => {
         try {
             let count = await Post.count(query).exec();
@@ -43,6 +45,7 @@ function getPostsWithPagination(query, paginationInfo, callback) {
                 .limit(pagination.itemPerPage)
                 .populate({path: "tags"})
                 .populate({path: "owner", select: {password: 0}})
+                .sort(orderBy)
                 .exec((err, data) => {
                     callback(err, {data, pagination});
                 });
@@ -56,11 +59,12 @@ function getPostsWithPagination(query, paginationInfo, callback) {
  * Query paginated Posts
  * @param state
  * @param paginationInfo include itemPerPage and page information to get pagination data
+ * @param orderBy
  * @param callback
  */
-function getAllPostsWithPagination(state = [postState.PUBLIC], paginationInfo, callback) {
+function getAllPostsWithPagination(state = [postState.PUBLIC], paginationInfo, orderBy = {createdAt: -1}, callback) {
     let query = {state: {$in: state}};
-    getPostsWithPagination(query, paginationInfo, callback);
+    getPostsWithPagination(query, paginationInfo, orderBy, callback);
 }
 
 /**
@@ -68,11 +72,12 @@ function getAllPostsWithPagination(state = [postState.PUBLIC], paginationInfo, c
  * @param state
  * @param keyword
  * @param paginationInfo
+ * @param orderBy
  * @param callback
  */
-function searchPostsByKeyword(state = [postState.PUBLIC], keyword = "", paginationInfo, callback) {
+function searchPostsByKeyword(state = [postState.PUBLIC], keyword = "", paginationInfo, orderBy = {createdAt: -1}, callback) {
     let query = {$text: {$search: keyword}, state: {$in: state}};
-    getPostsWithPagination(query, paginationInfo, callback);
+    getPostsWithPagination(query, paginationInfo, orderBy, callback);
 }
 
 /**
@@ -102,7 +107,7 @@ function getPostsByTagsWithPagination(keyword = "", tags = [], state = [postStat
     })();
 }
 
-export function getPosts(category = "", keyword = "", tags = [], state = [postState.PUBLIC], paginationInfo, callback) {
+export function getPosts(category = "", keyword = "", tags = [], state = [postState.PUBLIC], paginationInfo, orderBy = {createdAt: -1}, callback) {
     (async() => {
         try {
             let query = {};
@@ -124,7 +129,7 @@ export function getPosts(category = "", keyword = "", tags = [], state = [postSt
                     console.log("Not find category");
                 }
             }
-            getPostsWithPagination(query, paginationInfo, callback);
+            getPostsWithPagination(query, paginationInfo, orderBy, callback);
         } catch (err) {
             callback(err);
         }
