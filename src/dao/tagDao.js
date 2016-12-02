@@ -4,6 +4,7 @@
 import {Tag, Post} from '../models/index';
 import slug from 'slug';
 import Pagination from 'pagination-js';
+import _ from 'lodash';
 
 /**
  * Save new tag if it is not exist Async
@@ -83,13 +84,21 @@ function getTagsWithPagination(queryObj, paginationInfo, orderByObj, callback) {
         try {
             let count = await Tag.count(queryObj).exec();
             let pagination = (new Pagination(paginationInfo, count)).getPagination();
-            Tag.find(queryObj)
+            let tags = await Tag.find(queryObj)
                 .skip(pagination.minIndex)
                 .limit(pagination.itemPerPage)
                 .sort(orderByObj)
-                .exec((err, data) => {
-                    callback(err, {data, pagination});
-                });
+                .exec();
+            let data = [];
+            for (let i = 0; i < tags.length; i++) {
+                let totalPost = await Post.count({tags: tags[i]._id}).exec();
+                let tagClone = {
+                    ...tags[i]._doc,
+                    totalPost
+                };
+                data.push(tagClone);
+            }
+            callback(null, {data, pagination});
         } catch (err) {
             callback(err);
         }
@@ -103,9 +112,24 @@ function getTagsWithPagination(queryObj, paginationInfo, orderByObj, callback) {
  * @param callback
  */
 function getTagsWithoutPagination(queryObj, orderByObj, callback) {
-    Tag.find(queryObj)
-        .sort(orderByObj)
-        .exec(callback);
+    (async() => {
+        try {
+            let tagsRes = [];
+            let tags = await Tag.find(queryObj).sort(orderByObj).exec();
+            for (let i = 0; i < tags.length; i++) {
+                let totalPost = await Post.count({tags: tags[i]._id}).exec();
+                let tagClone = {
+                    ...tags[i]._doc,
+                    totalPost
+                };
+                tagsRes.push(tagClone);
+            }
+            callback(null, tagsRes);
+        } catch (err) {
+            callback(err);
+        }
+    })();
+
 }
 
 /**
@@ -191,7 +215,19 @@ export function deleteTag(queryObj, callback) {
  * @param callback
  */
 export function getTag(queryObj, callback) {
-    Tag.findOne(queryObj).exec(callback);
+    (async() => {
+        try {
+            let tag = await Tag.findOne(queryObj).exec();
+            let totalPost = await Post.count({tags: tag._id}).exec();
+            let tagClone = {
+                ...tag._doc,
+                totalPost
+            };
+            callback(null, tagClone);
+        } catch (err) {
+            callback(err);
+        }
+    })();
 }
 
 export {saveTagIfNeeded, saveTags, getAllTagsWithPagination, getTagsByTagSlugs}

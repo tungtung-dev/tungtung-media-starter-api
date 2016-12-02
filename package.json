@@ -37,6 +37,7 @@
     "fs": "0.0.1-security",
     "graphql": "^0.7.2",
     "jsonwebtoken": "^7.1.9",
+    "lodash": "^4.17.2",
     "lwip": "0.0.9",
     "mailgun-js": "^0.7.13",
     "marked": "^0.3.6",
