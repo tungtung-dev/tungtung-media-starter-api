@@ -176,7 +176,7 @@ function updatePost(queryObj, postData, tags, callback) {
         try {
             let categoryCount = await Category.count({_id: postData.categoryId}).exec();
             console.log("categoryCount " + categoryCount);
-            if (categoryCount > 0) {
+            if (postData.categoryId === undefined || postData.categoryId === null || categoryCount > 0) {
                 let tagIds = await saveTags(tags);
                 Object.assign(postData, {tags: tagIds});
                 Post.findOneAndUpdate(queryObj, {$set: postData}, {new: true})
