@@ -42,7 +42,8 @@ export function getTagRoute(req, res) {
 export function getTagsRoute(req, res) {
     let paginationInfo = req.query;
     let orderBy = getOrderByObject(req.query);
-    getAllTagsWithPagination(paginationInfo, orderBy, (err, data) => {
+    let {keyword} = req.query;
+    getAllTagsWithPagination(keyword, paginationInfo, orderBy, (err, data) => {
         showResultToClient(err, data, res);
     });
 }

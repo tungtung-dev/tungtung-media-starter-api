@@ -13,6 +13,7 @@ import Pagination from 'pagination-js';
 async function saveTagIfNeeded(tag) {
     tag = tag.toLowerCase();
     let sluggedTag = slug(tag);
+    let searchField = slug(tag, ' ');
     try {
         await Tag.update({slug: sluggedTag}, {
             $set: {
@@ -21,6 +22,7 @@ async function saveTagIfNeeded(tag) {
             $setOnInsert: {
                 name: tag,
                 slug: sluggedTag,
+                searchField: searchField,
                 createdAt: new Date()
             }
         }, {upsert: true}).exec();
@@ -31,9 +33,15 @@ async function saveTagIfNeeded(tag) {
     }
 }
 
+/**
+ *
+ * @param tag
+ * @param callback
+ */
 export function saveTagIfNeededAsync(tag, callback) {
     tag = tag.toLowerCase();
     let sluggedTag = slug(tag);
+    let searchField = slug(tag, ' ');
     Tag.findOneAndUpdate({slug: sluggedTag}, {
         $set: {
             updatedAt: new Date()
@@ -41,6 +49,7 @@ export function saveTagIfNeededAsync(tag, callback) {
         $setOnInsert: {
             name: tag,
             slug: sluggedTag,
+            searchField: searchField,
             createdAt: new Date()
         }
     }, {upsert: true, new: true}).exec(callback);
@@ -110,12 +119,13 @@ export function getAllTagsWithoutPagination(orderByObj, callback) {
 
 /**
  * Get all tags with pagination
+ * @param keyword
  * @param paginationInfo include item_per_page and page information to get pagination data
  * @param orderByObj
  * @param callback
  */
-function getAllTagsWithPagination(paginationInfo, orderByObj, callback) {
-    let queryObj = {};
+function getAllTagsWithPagination(keyword = '', paginationInfo, orderByObj, callback) {
+    let queryObj = keyword === '' ? {} : {$text: {$search: keyword}};
     getTagsWithPagination(queryObj, paginationInfo, orderByObj, callback);
 }
 
@@ -142,10 +152,12 @@ async function getTagsByTagSlugs(tags) {
 export function updateTag(queryObj, name, callback) {
     name = name.toLowerCase();
     let sluggedTag = slug(name);
+    let searchField = slug(name, ' ');
     Tag.findOneAndUpdate(queryObj, {
         $set: {
             name: name,
             slug: sluggedTag,
+            searchField: searchField,
             updatedAt: new Date()
         },
         $setOnInsert: {
