@@ -60,14 +60,14 @@ route.post('/', createPostMiddleware, (req, res) => {
     })
 });
 
-route.get('/:postSlug', getPostBySlugOrIdRoute);
+route.get('/:post', getPostBySlugOrIdRoute);
 
-route.put('/:postSlug', editPostMiddleware, (req, res) => {
+route.put('/:post', editPostMiddleware, (req, res) => {
     (async() => {
-        var {postSlug} = req.params;
+        var {post} = req.params;
         let tags = req.body.tags === undefined ? [] : req.body.tags;
-        let isValid = isObjectId(postSlug);
-        let queryObj = isValid ? {_id: postSlug, owner: req.user._id} : {slug: postSlug, owner: req.user._id};
+        let isValid = isObjectId(post);
+        let queryObj = isValid ? {_id: post, owner: req.user._id} : {slug: post, owner: req.user._id};
         let state = await getCorrectStateAsync(req.body.state);
         let data = convertData(req.body, {
             title: {$get: true},
@@ -90,9 +90,9 @@ route.put('/:postSlug', editPostMiddleware, (req, res) => {
     })();
 });
 
-route.delete('/:postSlug', deletePostMiddleware, (req, res) => {
-    var {postSlug} = req.params;
-    deletePostBySlug(postSlug, (err, data) => {
+route.delete('/:post', deletePostMiddleware, (req, res) => {
+    var {post} = req.params;
+    deletePostBySlug(post, (err, data) => {
         showResultToClient(err, data, res);
     });
 });
