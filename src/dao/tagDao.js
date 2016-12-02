@@ -1,7 +1,7 @@
 /**
  * Created by Tien Nguyen on 11/18/16.
  */
-import {Tag} from '../models/index';
+import {Tag, Post} from '../models/index';
 import slug from 'slug';
 import Pagination from 'pagination-js';
 
@@ -154,8 +154,23 @@ export function updateTag(queryObj, name, callback) {
     }, {upsert: true, new: true}).exec(callback);
 }
 
+/**
+ * Delete tag and remove it from posts
+ * @param queryObj
+ * @param callback
+ */
 export function deleteTag(queryObj, callback) {
-    Tag.findOneAndRemove(queryObj).exec(callback);
+    Tag.findOneAndRemove(queryObj).exec((err, tag) => {
+        if (err || tag === null) {
+            callback(err ? err : new Error("Not find tag"));
+        } else {
+            //, {$set: {$pull: tag._id}}, {multi: true}
+            Post.update({tags: tag._id}, {$pull: {tags: tag._id}}, {multi: true})
+                .exec((err, post) => {
+                    callback(null, {tag, post});
+                })
+        }
+    });
 }
 
 /**
