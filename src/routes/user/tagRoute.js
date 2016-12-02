@@ -8,6 +8,7 @@ import {getAllTagsWithoutPagination} from "../../dao/tagDao";
 import {getTag} from "../../dao/tagDao";
 import {showResultToClient} from "../../utils/responseUtils";
 import {getOrderByObject} from "../../utils/orderByManager";
+import {isObjectId} from "../../utils/objectIdUtils";
 
 var router = express.Router();
 
@@ -19,27 +20,39 @@ router.get('/without-pagination', getTagsWithoutPaginationRoute);
 
 router.get('/:tag', getTagRoute);
 
+/**
+ * Get tag by Id or slug
+ * @param req
+ * @param res
+ */
 export function getTagRoute(req, res) {
     let tag = req.params.tag;
-    let isValid = ObjectId.isValid(tag);
+    let isValid = isObjectId(tag);
     let queryObj = isValid ? {_id: tag} : {slug: tag};
     getTag(queryObj, (err, data) => {
         showResultToClient(err, data, res);
     });
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ */
 export function getTagsRoute(req, res) {
     let paginationInfo = req.query;
     let orderBy = getOrderByObject(req.query);
     getAllTagsWithPagination(paginationInfo, orderBy, (err, data) => {
-        if (err) {
-            res.json({success: false, message: err === null ? "Not found" : err.message});
-        } else {
-            res.json(data);
-        }
+        showResultToClient(err, data, res);
     });
 }
 
+/**
+ *
+ * @param req
+ * @param res
+ * @param next
+ */
 export function getTagsWithoutPaginationRoute(req, res, next) {
     let orderBy = getOrderByObject(req.query);
     getAllTagsWithoutPagination(orderBy, (err, data) => {
