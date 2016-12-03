@@ -21,6 +21,8 @@ var route = express.Router();
 route.get('/', viewCategoryMiddleware, getPaginatedCategoriesRoute);
 
 route.post('/', createCategoryMiddleware, (req, res) => {
+    console.log('get category first');
+
     let data = convertData(req.body, {
         name: {$get: true, $default: "untitled"},
         slug: {
@@ -33,8 +35,12 @@ route.post('/', createCategoryMiddleware, (req, res) => {
         featuredImage: {$get: true},
         secondaryFeaturedImage: {$get: true},
         customField: {$get: true},
-        parentId: {$get: true}
+        parentId: {$update: (value) => {
+            if(value === 0 || value === '0' || !value) return null;
+            return value;
+        }}
     });
+    console.log(data);
     saveCategory(data, (err, data) => {
         showResultToClient(err, data, res);
     });
