@@ -35,10 +35,12 @@ route.post('/', createCategoryMiddleware, (req, res) => {
         featuredImage: {$get: true},
         secondaryFeaturedImage: {$get: true},
         customField: {$get: true},
-        parentId: {$update: (value) => {
-            if(value === 0 || value === '0' || !value) return null;
-            return value;
-        }}
+        parentId: {
+            $update: (value) => {
+                if (value === 0 || value === '0' || !value) return null;
+                return value;
+            }
+        }
     });
     console.log(data);
     saveCategory(data, (err, data) => {
@@ -68,7 +70,12 @@ route.put('/:category', editCategoryMiddleware, (req, res) => {
         featuredImage: {$get: true},
         secondaryFeaturedImage: {$get: true},
         customField: {$get: true},
-        parentId: {$get: true},
+        parentId: {
+            $update: (value) => {
+                if (value === 0 || value === '0' || !value) return null;
+                return value;
+            }
+        },
         updatedAt: {$get: true, default: new Date()}
     });
     updateCategory(queryObj, data, (err, data) => {
