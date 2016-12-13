@@ -13,6 +13,10 @@ var tagSchema = new Schema({
     updatedAt: {type: Date, default: Date.now}
 });
 
+tagSchema.virtual('id').get(function () {
+    return this._id;
+});
+
 tagSchema.set('toJSON', {virtuals: true});
 
 tagSchema.index({searchField: 1}, {unique: false});
