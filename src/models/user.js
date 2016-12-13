@@ -16,6 +16,7 @@ var userSchema = new Schema({
     biography: {type: String},
     facebook: {type: String},
     superAdmin: {type: Boolean, default: false},
+    banned: {type: Boolean, default: false},
     permissions: [{type: Schema.ObjectId, ref: 'permission'}],
     createdAt: {type: Date, default: Date.now},
     updatedAt: {type: Date, default: Date.now}

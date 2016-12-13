@@ -8,8 +8,18 @@ import contentTypeRoute from "./contentTypeRoute";
 import postRoute from "./postRoute";
 import tagRoute from "./tagRoute";
 import categoryRoute from "./categoryRoute";
+import userRoute from './userRoute';
 
-export {settingRoute, permissionRoute, contentTypeRoute, userPermissionRoute, postRoute, tagRoute, categoryRoute}
+export {
+    settingRoute,
+    permissionRoute,
+    contentTypeRoute,
+    userPermissionRoute,
+    postRoute,
+    tagRoute,
+    categoryRoute,
+    userRoute
+}
 
 export default {
     settingRoute,
@@ -18,5 +28,6 @@ export default {
     userPermissionRoute,
     postRoute,
     tagRoute,
-    categoryRoute
+    categoryRoute,
+    userRoute
 }

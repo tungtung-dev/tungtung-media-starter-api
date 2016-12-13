@@ -5,21 +5,26 @@ import express from "express";
 import {updateUserPermission, getUserPermission} from "../../dao/userDao";
 import {changeUserPermissionMiddleware, viewUserPermissionMiddleware} from "../../middlewares/admin/userPermission";
 import {showResultToClient} from "../../utils/responseUtils";
+import {isObjectId} from "../../utils/objectIdUtils";
+import logger from '../../utils/logger';
 
 var route = express.Router();
+const TAG = 'user permission';
 
-route.put('/:username', changeUserPermissionMiddleware, (req, res) => {
-    let username = req.params.username;
+route.put('/:userKey', changeUserPermissionMiddleware, (req, res) => {
+    let userKey = req.params.userKey;
+    let queryObj = isObjectId(userKey) ? {_id: userKey} : {username: userKey};
     let permissionIds = req.body.permissionIds;
-    console.log("perIds = " + permissionIds + " username " + username);
-    updateUserPermission(username, permissionIds, (err, data)=>{
+    logger.info(TAG, "perIds = " + permissionIds + " userKey " + userKey);
+    updateUserPermission(queryObj, permissionIds, (err, data)=> {
         showResultToClient(err, data, res);
     });
 });
 
-route.get('/:username', viewUserPermissionMiddleware, (req, res) => {
-    let username = req.params.username;
-    getUserPermission(username, (err, data) => {
+route.get('/:userKey', viewUserPermissionMiddleware, (req, res) => {
+    let userKey = req.params.userKey;
+    let queryObj = isObjectId(userKey) ? {_id: userKey} : {username: userKey};
+    getUserPermission(queryObj, (err, data) => {
         showResultToClient(err, data, res);
     });
 });

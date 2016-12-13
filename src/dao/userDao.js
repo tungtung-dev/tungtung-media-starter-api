@@ -3,6 +3,8 @@
  */
 import User from "../models/user";
 import bscrypt from "../utils/bcrypt";
+import Pagination from "pagination-js";
+import {createTokenAndGetUser} from "../utils/index";
 
 const TAG = "UserDAO";
 
@@ -15,23 +17,6 @@ function selectUser(query, callback) {
     User.findOne(query)
         .select({password: 0})
         .exec(callback);
-}
-
-/**
- *
- * @param queryObj
- * @param value
- * @param callback
- */
-function updateBalance(queryObj, value, callback) {
-    User.findOne(queryObj).exec((err, user) => {
-        if (err) {
-            callback(err);
-        } else {
-            user.balance += value;
-            user.updatedAt = new Date();
-        }
-    });
 }
 
 /**
@@ -78,7 +63,7 @@ function checkEmail(email) {
 function newestMember(callback) {
     User.findOne({})
         .select({password: 0})
-        .sort({created_at: -1})
+        .sort({createdAt: -1})
         .exec((err, user)=> {
             callback(err, user.username);
         });
@@ -94,21 +79,21 @@ function totalAccount(callback) {
 
 /**
  * Update user permission
- * @param username
+ * @param queryObj
  * @param permissionIds
  * @param callback
  */
-export function updateUserPermission(username, permissionIds, callback) {
-    User.findOneAndUpdate({username: username}, {$set: {permissions: permissionIds}}).exec(callback);
+export function updateUserPermission(queryObj, permissionIds, callback) {
+    User.findOneAndUpdate(queryObj, {$set: {permissions: permissionIds}}).exec(callback);
 }
 
 /**
  * Get user permissions
- * @param username
+ * @param queryObj
  * @param callback
  */
-export function getUserPermission(username, callback) {
-    User.findOne({username: username}).populate({path: "permissions"}).exec((err, user) => {
+export function getUserPermission(queryObj, callback) {
+    User.findOne(queryObj).populate({path: "permissions"}).exec((err, user) => {
         callback(err, user === null ? [] : user.permissions);
     });
 }
@@ -138,13 +123,70 @@ export function createSuperAdmin(callback) {
     })();
 }
 
+/**
+ * Get User by query, paginate it and sort by sorter object
+ * @param queryObj
+ * @param paginationInfo
+ * @param orderByObj
+ * @param callback
+ */
+export function getUsers(queryObj, paginationInfo, orderByObj, callback) {
+    (async() => {
+        try {
+            let totalItem = await User.count(queryObj).exec();
+            let pagination = (new Pagination(paginationInfo, totalItem)).getPagination();
+            User.find(queryObj)
+                .select({password: 0})
+                .skip(pagination.minIndex)
+                .limit(pagination.itemPerPage)
+                .sort(orderByObj)
+                .exec((err, users) => {
+                    callback(null, {data: users, pagination: pagination});
+                });
+        } catch (err) {
+            callback(err);
+        }
+    })();
+}
+
+/**
+ * Ban user
+ * @param queryObj
+ * @param callback
+ */
+export function banUser(queryObj, callback) {
+    User.findOneAndUpdate(queryObj, {$set: {banned: true}}, {new: true}).exec(callback);
+}
+
+/**
+ * Ban user
+ * @param queryObj
+ * @param callback
+ */
+export function deBanUser(queryObj, callback) {
+    User.findOneAndUpdate(queryObj, {$set: {banned: false}}, {new: true}).exec(callback);
+}
+
+/**
+ *
+ * @param queryObj
+ * @param callback
+ */
+export function getUserInfo(queryObj, callback) {
+    User.findOne(queryObj).select({password: 0}).exec((err, user) => {
+        callback(err, {
+            ...createTokenAndGetUser(user),
+            ...user
+        });
+    })
+}
+
 export {
-    selectUser, updateBalance, updatePassword, checkEmail, newestMember, totalAccount
+    selectUser, updatePassword, checkEmail, newestMember, totalAccount
 }
 
 export default {
     selectUser,
-    updateBalance,
     updatePassword,
     checkEmail,
     newestMember,
