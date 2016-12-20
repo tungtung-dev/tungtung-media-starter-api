@@ -1,10 +1,9 @@
 /**
  * Created by Tien Nguyen on 11/18/16.
  */
-import {Tag, Post} from '../models/index';
-import slug from 'slug';
-import Pagination from 'pagination-js';
-import _ from 'lodash';
+import {Tag, Post} from "../models/index";
+import slug from "slug";
+import Pagination from "pagination-js";
 
 /**
  * Save new tag if it is not exist Async

@@ -4,15 +4,11 @@
 
 import express from "express";
 import {User} from "../../models/index";
-import {createTokenAndGetUser} from "../../utils/index";
 import {viewUserMiddleware, deleteUserMiddleware} from "../../middlewares/admin/user";
 import {showResultToClient} from "../../utils/responseUtils";
-import {getUsers} from "../../dao/userDao";
+import {getUsers, banUser, getUserInfo, deBanUser} from "../../dao/userDao";
 import {getOrderByObject} from "../../utils/orderByManager";
 import {isObjectId} from "../../utils/objectIdUtils";
-import {banUser} from "../../dao/userDao";
-import {getUserInfo} from "../../dao/userDao";
-import {deBanUser} from "../../dao/userDao";
 
 var route = express.Router();
 const TAG = "UserAdminRoute";
