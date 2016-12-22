@@ -46,6 +46,7 @@ app.use('/settings', userRoutes.settingRoute);
 app.use('/tags', userRoutes.tagRoute);
 
 app.use('/categories', userRoutes.categoryRoute);
+app.use('/menu', userRoutes.menuRoute);
 
 
 app.use('/admin/settings', adminRoutes.settingRoute);
@@ -56,6 +57,7 @@ app.use('/admin/posts', adminRoutes.postRoute);
 app.use('/admin/tags', adminRoutes.tagRoute);
 app.use('/admin/categories', adminRoutes.categoryRoute);
 app.use('/admin/users', adminRoutes.userRoute);
+app.use('/admin/menu', adminRoutes.menuRoute);
 
 
 app.use('/super-admin/', supperAdminRoutes.setupRoute);

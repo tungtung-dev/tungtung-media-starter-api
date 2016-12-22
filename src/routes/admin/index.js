@@ -9,6 +9,7 @@ import postRoute from "./postRoute";
 import tagRoute from "./tagRoute";
 import categoryRoute from "./categoryRoute";
 import userRoute from './userRoute';
+import menuRoute from './menuRoute';
 
 export {
     settingRoute,
@@ -18,7 +19,8 @@ export {
     postRoute,
     tagRoute,
     categoryRoute,
-    userRoute
+    userRoute,
+    menuRoute
 }
 
 export default {
@@ -29,5 +31,6 @@ export default {
     postRoute,
     tagRoute,
     categoryRoute,
-    userRoute
+    userRoute,
+    menuRoute
 }
