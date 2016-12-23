@@ -60,3 +60,7 @@ export function saveMenu(data, callback) {
 export function updateMenu(queryObj, data, callback) {
     Menu.findOneAndUpdate(queryObj, {$set: data}, {new: true}).exec(callback);
 }
+
+export function deleteMenuItem(queryObj, callback) {
+    Menu.findOneAndRemove(queryObj).exec(callback);
+}

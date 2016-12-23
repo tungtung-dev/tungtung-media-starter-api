@@ -26,3 +26,11 @@ export function getMenuController(req, res) {
         showResultToClient(err, data, res);
     });
 }
+
+export function deleteMenuItemController(req, res) {
+    let {menuKey} = req.params;
+    let queryObj = isObjectId(menuKey) ? {_id: menuKey} : {key: menuKey};
+    deleteMenuItem(queryObj, (err, data) => {
+        showResultToClient(err, data, res);
+    })
+}

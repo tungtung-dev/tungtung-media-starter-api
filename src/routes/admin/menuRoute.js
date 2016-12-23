@@ -42,4 +42,6 @@ router.put('/:menuKey', (req, res) => {
 
 router.get('/:menuKey', getMenuItemController);
 
+router.delete('/:menuKey', deleteMenuItemController);
+
 export default router;
