@@ -7,6 +7,7 @@ import {convertData} from "common-helper";
 import {saveMenu, updateMenu} from "../../dao/menuDao";
 import {isObjectId} from "../../utils/objectIdUtils";
 import {getMenuItemWithoutPagController, getMenuItemController, getMenuController} from "../../controllers/menu";
+import {deleteMenuItemController} from "../../controllers/menu";
 
 var router = express.Router();
 
