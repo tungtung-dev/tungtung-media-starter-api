@@ -2,31 +2,15 @@
  * Created by Tien Nguyen on 11/30/16.
  */
 import express from "express";
-import {getMenuItemWithPagination, getMenuItemWithoutPagination, getMenuItem} from "../../dao/menuDao";
-import {showResultToClient} from "../../utils/responseUtils";
-import {isObjectId} from "../../utils/objectIdUtils";
+import {getMenuItemWithoutPagController, getMenuItemController} from "../../controllers/menu";
+import {getMenuController} from "../../controllers/menu";
 
 var router = express.Router();
 
-router.get('/', (req, res) => {
-    getMenuItemWithPagination(req.query, (err, data) => {
-        showResultToClient(err, data, res);
-    });
-});
+router.get('/', getMenuController);
 
-router.get('/without-pagination', (req, res) => {
-    getMenuItemWithoutPagination((err, data) => {
-        showResultToClient(err, data, res);
-    });
-});
+router.get('/without-pagination', getMenuItemWithoutPagController);
 
-router.get('/:menuKey', (req, res) => {
-    let {menuKey} = req.params;
-    let queryObj = isObjectId(menuKey) ? {_id: menuKey} : {key: menuKey};
-    getMenuItem(queryObj, (err, data) => {
-       showResultToClient(err, data, res);
-    });
-});
-
+router.get('/:menuKey', getMenuItemController);
 
 export default router;

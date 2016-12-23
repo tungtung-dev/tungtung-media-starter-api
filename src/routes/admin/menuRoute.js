@@ -4,11 +4,15 @@
 import express from "express";
 import {showResultToClient} from "../../utils/responseUtils";
 import {convertData} from "common-helper";
-import {saveMenu} from "../../dao/menuDao";
+import {saveMenu, updateMenu} from "../../dao/menuDao";
 import {isObjectId} from "../../utils/objectIdUtils";
-import {updateMenu} from "../../dao/menuDao";
+import {getMenuItemWithoutPagController, getMenuItemController, getMenuController} from "../../controllers/menu";
 
 var router = express.Router();
+
+router.get('/', getMenuController);
+
+router.get('/without-pagination', getMenuItemWithoutPagController);
 
 router.post('/', (req, res) => {
     let data = convertData(req.body, {
@@ -35,5 +39,7 @@ router.put('/:menuKey', (req, res) => {
         showResultToClient(err, data, res);
     })
 });
+
+router.get('/:menuKey', getMenuItemController);
 
 export default router;

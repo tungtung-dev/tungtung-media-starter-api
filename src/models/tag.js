@@ -13,7 +13,7 @@ var tagSchema = new Schema({
     updatedAt: {type: Date, default: Date.now}
 });
 
-tagSchema.virtual('id').get(function () {
+tagSchema.virtual('id').get(() => {
     return this._id;
 });
 
