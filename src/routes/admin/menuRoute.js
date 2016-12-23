@@ -4,11 +4,18 @@
 import express from "express";
 import {showResultToClient} from "../../utils/responseUtils";
 import {convertData} from "common-helper";
-import {saveMenu} from "../../dao/menuDao";
+import {saveMenu, getMenuItemWithPagination} from "../../dao/menuDao";
 import {isObjectId} from "../../utils/objectIdUtils";
 import {updateMenu} from "../../dao/menuDao";
 
 var router = express.Router();
+
+router.get('/', (req, res) => {
+    let query = req.query;
+    getMenuItemWithPagination(query, (err, data) => {
+        showResultToClient(err, data, res);
+    });
+});
 
 router.post('/', (req, res) => {
     let data = convertData(req.body, {
